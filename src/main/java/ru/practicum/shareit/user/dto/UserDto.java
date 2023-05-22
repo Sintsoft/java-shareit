@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 @RequiredArgsConstructor
 public class UserDto {
 
-    private Integer id;
+    private Integer id = -1;
 
     @NotNull
     private String name;

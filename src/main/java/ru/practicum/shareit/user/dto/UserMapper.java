@@ -7,12 +7,18 @@ public class UserMapper {
     private UserMapper() {}
 
     public static User fromDto(UserDto dto) {
-        // TODO : realize method
-        return null;
+        return new User(
+                dto.getId(),
+                dto.getName(),
+                dto.getEmail()
+        );
     }
 
     public static UserDto toDto(User user) {
-        // TODO : realize method
-        return null;
+        return new UserDto(
+                user.getId(),
+                user.getName(),
+                user.getEmail()
+        );
     }
 }
