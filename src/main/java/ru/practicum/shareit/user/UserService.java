@@ -1,19 +1,22 @@
 package ru.practicum.shareit.user;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.dto.UserMapper;
+
+import java.util.List;
 
 @Service
-@RequiredArgsConstructor
-public class UserService {
+public interface UserService {
 
-    private int idIterator = 1;
+    UserDto addUser(UserDto dto);
 
-    public UserDto addUser(UserDto userDto) {
-        User user = UserMapper.fromDto(userDto);
-        user.setId(idIterator++);
-        return UserMapper.toDto(user);
-    }
+    UserDto updateUser(UserDto dto);
+
+    UserDto updateUser(Integer id, UserDto dto);
+
+    void removeUser(int id);
+
+    UserDto getUser(int id);
+
+    List<UserDto> getAllUsers();
 }
