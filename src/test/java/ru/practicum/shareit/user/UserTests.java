@@ -1,13 +1,10 @@
 package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.function.Executable;
 
-import javax.validation.ValidationException;
 import javax.validation.Validator;
 
 import static javax.validation.Validation.buildDefaultValidatorFactory;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class UserTests {
