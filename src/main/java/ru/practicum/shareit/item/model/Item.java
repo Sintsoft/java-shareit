@@ -1,27 +1,40 @@
 package ru.practicum.shareit.item.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.utility.Entity;
 
+import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 
 /**
  * TODO Sprint add-controllers.
  */
 @Data
-public class Item {
-
-    Integer id;
+public class Item extends Entity {
 
     @NotNull
-    String name;
+    private String name;
 
-    String description;
+    private String description;
 
-    Boolean avaliable;
+    private Boolean available;
 
-    User owner;
+    private User owner;
 
-    ItemRequest request;
+    private ItemRequest request;
+
+    public Item(Integer id, String name, String description, Boolean available, User owner, ItemRequest request) {
+        super(id);
+        if (name == null) {
+            throw new ValidationException("Item name can not be null");
+        }
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.owner = owner;
+        this.request = request;
+    }
 }

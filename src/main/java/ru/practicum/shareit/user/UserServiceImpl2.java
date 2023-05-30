@@ -1,43 +1,44 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.utility.exception.EntityCollisionExcption;
-import ru.practicum.shareit.utility.storage.AppStorage;
+import ru.practicum.shareit.utility.exception.NotFoundException;
 
 import javax.validation.ValidationException;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
-@Primary
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl2 implements UserService {
 
-    @Autowired
-    private final AppStorage storage;
+    private int idIterator = 1;
+    private final Map<Integer, User> memStorage = new TreeMap<>();
 
     @Override
     public UserDto addUser(UserDto dto) {
         if (dto.getEmail() == null || dto.getName() == null) {
-            log.debug("Null user name or email");
             throw new ValidationException("Null feild on post");
         }
-        validateUserMailIsUnoue(dto.getEmail());
-        User adableUser = storage.UserStorage.create(UserMapper.fromDto(dto));
-        log.debug("Added item id = " + adableUser.getId());
+        User adableUser = UserMapper.fromDto(dto);
+        validateUserMailIsUnoue(adableUser.getEmail());
+        adableUser.setId(idIterator++);
+        memStorage.put(adableUser.getId(), adableUser);
         return UserMapper.toDto(adableUser);
     }
 
     @Override
     public UserDto updateUser(Integer id, UserDto dto) {
-        User updUser = storage.UserStorage.read(id);
+        if (!memStorage.containsKey(id)) {
+            throw new NotFoundException("USer not found");
+        }
+        User updUser = memStorage.get(id);
         if (dto.getEmail() != null) {
             validateUserMailIsUnoue(dto.getEmail());
             updUser.setEmail(dto.getEmail());
@@ -45,28 +46,32 @@ public class UserServiceImpl implements UserService {
         if (dto.getName() != null) {
             updUser.setName(dto.getName());
         }
-        storage.UserStorage.update(updUser);
         return UserMapper.toDto(updUser);
     }
 
     @Override
     public void removeUser(int id) {
-        storage.UserStorage.delete(id);;
+        if (!memStorage.containsKey(id)) {
+            throw new NotFoundException("USer not found");
+        }
+        memStorage.remove(id);
     }
 
     @Override
     public UserDto getUser(int id) {
-        return UserMapper.toDto(storage.UserStorage.read(id));
+        if (!memStorage.containsKey(id)) {
+            throw new NotFoundException("USer not found");
+        }
+        return UserMapper.toDto(memStorage.get(id));
     }
 
     @Override
     public List<UserDto> getAllUsers() {
-        return storage.UserStorage.stream()
-                .map(UserMapper::toDto).collect(Collectors.toList());
+        return memStorage.values().stream().map(UserMapper::toDto).collect(Collectors.toList());
     }
 
     private void validateUserMailIsUnoue(String email) {
-        if (storage.UserStorage.stream()
+        if (memStorage.values().stream()
                 .anyMatch(o -> email
                         .toLowerCase().equals(
                                 o.getEmail()
@@ -75,4 +80,5 @@ public class UserServiceImpl implements UserService {
             throw new EntityCollisionExcption("User with that email already exist");
         }
     }
+
 }

@@ -18,7 +18,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse entityConflictHandler(final EntityCollisionExcption e) {
-        String errorMessage = String.format("Got entity collision - ", e.getMessage());
+        String errorMessage = String.format("Got entity collision - %s", e.getMessage());
         log.info(errorMessage);
         return new ErrorResponse(errorMessage);
     }
@@ -26,7 +26,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse validationExceptionHandler(final ValidationException e) {
-        String errorMessage = String.format("Validation exception - ", e.getMessage());
+        String errorMessage = String.format("Validation exception - %s", e.getMessage());
         log.info(errorMessage);
         return new ErrorResponse(errorMessage);
     }
@@ -34,7 +34,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse notFoundHandler(final NotFoundException e) {
-        String errorMessage = String.format("Entity not found - ", e.getMessage());
+        String errorMessage = String.format("Entity not found - %s", e.getMessage());
         log.info(errorMessage);
         return new ErrorResponse(errorMessage);
     }
@@ -42,7 +42,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse nullExceptionHandler(final NullPointerException e) {
-        String errorMessage = String.format("Null field found - ", e.getMessage());
+        String errorMessage = String.format("Null field found - %s", e.getMessage());
         log.info(errorMessage);
         return new ErrorResponse(errorMessage);
     }
