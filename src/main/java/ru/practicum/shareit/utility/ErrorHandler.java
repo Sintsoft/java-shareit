@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.utility.exception.EntityCollisionExcption;
 import ru.practicum.shareit.utility.exception.NotFoundException;
+import ru.practicum.shareit.utility.exception.UnpermittedAction;
 
 import javax.validation.ValidationException;
-import javax.validation.executable.ValidateOnExecution;
 
 @Slf4j
 @RestControllerAdvice
@@ -43,6 +43,14 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse nullExceptionHandler(final NullPointerException e) {
         String errorMessage = String.format("Null field found - %s", e.getMessage());
+        log.info(errorMessage);
+        return new ErrorResponse(errorMessage);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse unapermittedActionHandler(final UnpermittedAction e) {
+        String errorMessage = String.format("Unpremmited action - %s", e.getMessage());
         log.info(errorMessage);
         return new ErrorResponse(errorMessage);
     }

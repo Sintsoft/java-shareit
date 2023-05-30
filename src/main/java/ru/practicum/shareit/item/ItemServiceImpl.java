@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.utility.exception.UnpermittedAction;
 import ru.practicum.shareit.utility.storage.AppStorage;
 
 import javax.validation.ValidationException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
 @Primary
 @Slf4j
 @RequiredArgsConstructor
-public class ItemServiceImpl implements ItemService{
+public class ItemServiceImpl implements ItemService {
 
     @Autowired
     private final AppStorage storage;
@@ -35,53 +37,51 @@ public class ItemServiceImpl implements ItemService{
         Item addItem = ItemMapper.fromDto(dto);
         log.debug("Added item id = " + addItem.getId());
         if (dto.getOwner() != null) {
-            addItem.setOwner(storage.UserStorage.read(dto.getOwner()));
+            addItem.setOwner(storage.userStorage.read(dto.getOwner()));
         }
-        addItem = storage.ItemStorage.create(addItem);
+        addItem = storage.itemStorage.create(addItem);
         return ItemMapper.toDto(addItem);
     }
 
     @Override
     public ItemDto updateItem(Integer id, ItemDto dto) {
-        Item itemForUpd = storage.ItemStorage.read(id);
-        Item updItem = ItemMapper.fromDto(dto);
-        updItem.setOwner(storage.UserStorage.read(dto.getOwner()));
-        if (updItem.getName() != null && !updItem.getName().equals(itemForUpd.getName())) {
-            itemForUpd.setName(updItem.getName());
+        Item itemForUpd = storage.itemStorage.read(id);
+        if (dto.getOwner() != null && !storage.userStorage.read(dto.getOwner()).equals(itemForUpd.getOwner())) {
+            throw new UnpermittedAction("User change is not allowed");
         }
-        if (updItem.getDescription() != null && !updItem.getDescription().equals(itemForUpd.getDescription())) {
-            itemForUpd.setDescription(updItem.getDescription());
+        if (dto.getName() != null && !dto.getName().equals(itemForUpd.getName())) {
+            itemForUpd.setName(dto.getName());
         }
-        if (updItem.getAvailable() != null && !updItem.getAvailable().equals(itemForUpd.getAvailable())) {
-            itemForUpd.setAvailable(updItem.getAvailable());
+        if (dto.getDescription() != null && !dto.getDescription().equals(itemForUpd.getDescription())) {
+            itemForUpd.setDescription(dto.getDescription());
         }
-        if (updItem.getOwner() != null && !updItem.getOwner().equals(itemForUpd.getOwner())) {
-            itemForUpd.setOwner(updItem.getOwner());
+        if (dto.getAvailable() != null && !dto.getAvailable().equals(itemForUpd.getAvailable())) {
+            itemForUpd.setAvailable(dto.getAvailable());
         }
-        itemForUpd = storage.ItemStorage.update(itemForUpd);
+        itemForUpd = storage.itemStorage.update(itemForUpd);
         return ItemMapper.toDto(itemForUpd);
     }
 
     @Override
     public ItemDto getItem(int dto) {
-        return ItemMapper.toDto(storage.ItemStorage.read(dto));
+        return ItemMapper.toDto(storage.itemStorage.read(dto));
     }
 
     @Override
     public List<ItemDto> getAllItems() {
-        return storage.ItemStorage.stream()
+        return storage.itemStorage.stream()
                 .map(ItemMapper::toDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     public void removeItem(int id) {
-        storage.ItemStorage.delete(id);
+        storage.itemStorage.delete(id);
     }
 
     @Override
     public List<ItemDto> getUserItems(int userId) {
-        return storage.ItemStorage.stream()
+        return storage.itemStorage.stream()
                 .filter(item -> item.getOwner().getId() == userId)
                 .map(ItemMapper::toDto)
                 .collect(Collectors.toList());
@@ -89,9 +89,13 @@ public class ItemServiceImpl implements ItemService{
 
     @Override
     public List<ItemDto> searchItem(String searchString) {
-        return storage.ItemStorage.stream().filter(item ->
-                item.getName().toLowerCase().contains(searchString.toLowerCase()) ||
-                        item.getDescription().toLowerCase().contains(searchString.toLowerCase()))
+        if (searchString.isBlank() || searchString.isEmpty()) {
+            return new ArrayList<ItemDto>();
+        }
+        return storage.itemStorage.stream().filter(item ->
+                (item.getName().toLowerCase().contains(searchString.toLowerCase())
+                        || item.getDescription().toLowerCase().contains(searchString.toLowerCase())
+                ) && item.getAvailable())
                 .map(ItemMapper::toDto)
                 .collect(Collectors.toList());
     }

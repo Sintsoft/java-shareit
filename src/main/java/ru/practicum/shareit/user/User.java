@@ -2,8 +2,6 @@ package ru.practicum.shareit.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.utility.Entity;
 
 import javax.validation.ValidationException;
@@ -32,7 +30,7 @@ public class User extends Entity {
         this.name = name;
         if (email == null) {
             throw new ValidationException("User email can not be null");
-        }else if (!email.matches("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
+        } else if (!email.matches("^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@"
                 + "[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$")) {
             throw new ValidationException("User email is not vaild");
         }

@@ -2,11 +2,10 @@ package ru.practicum.shareit.item.dto;
 
 import ru.practicum.shareit.item.model.Item;
 
-import javax.validation.ValidationException;
-
 public class ItemMapper {
 
-    private ItemMapper() {}
+    private ItemMapper() {
+    }
 
     public static ItemDto toDto(Item item) {
         return new ItemDto(

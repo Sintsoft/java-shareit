@@ -30,14 +30,14 @@ public class UserServiceImpl implements UserService {
             throw new ValidationException("Null feild on post");
         }
         validateUserMailIsUnoue(dto.getEmail());
-        User adableUser = storage.UserStorage.create(UserMapper.fromDto(dto));
+        User adableUser = storage.userStorage.create(UserMapper.fromDto(dto));
         log.debug("Added item id = " + adableUser.getId());
         return UserMapper.toDto(adableUser);
     }
 
     @Override
     public UserDto updateUser(Integer id, UserDto dto) {
-        User updUser = storage.UserStorage.read(id);
+        User updUser = storage.userStorage.read(id);
         if (dto.getEmail() != null) {
             validateUserMailIsUnoue(dto.getEmail());
             updUser.setEmail(dto.getEmail());
@@ -45,28 +45,28 @@ public class UserServiceImpl implements UserService {
         if (dto.getName() != null) {
             updUser.setName(dto.getName());
         }
-        storage.UserStorage.update(updUser);
+        storage.userStorage.update(updUser);
         return UserMapper.toDto(updUser);
     }
 
     @Override
     public void removeUser(int id) {
-        storage.UserStorage.delete(id);;
+        storage.userStorage.delete(id);;
     }
 
     @Override
     public UserDto getUser(int id) {
-        return UserMapper.toDto(storage.UserStorage.read(id));
+        return UserMapper.toDto(storage.userStorage.read(id));
     }
 
     @Override
     public List<UserDto> getAllUsers() {
-        return storage.UserStorage.stream()
+        return storage.userStorage.stream()
                 .map(UserMapper::toDto).collect(Collectors.toList());
     }
 
     private void validateUserMailIsUnoue(String email) {
-        if (storage.UserStorage.stream()
+        if (storage.userStorage.stream()
                 .anyMatch(o -> email
                         .toLowerCase().equals(
                                 o.getEmail()
