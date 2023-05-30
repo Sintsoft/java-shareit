@@ -2,14 +2,12 @@ package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.Test;
 
-import javax.validation.Validator;
+import javax.validation.ValidationException;
 
-import static javax.validation.Validation.buildDefaultValidatorFactory;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class UserTests {
-
-    Validator validator = buildDefaultValidatorFactory().getValidator();
 
     @Test
     void createUserTest() {
@@ -19,38 +17,43 @@ public class UserTests {
                 "name",
                 "user@email.com"
             );
-            assertTrue(validator.validate(user).isEmpty());
         });
 
     }
 
     @Test
     void createNullNameUserTest() {
-        User user = new User(
+        assertThrows(ValidationException.class, () -> {
+            User user = new User(
                 null,
                 null,
                 "email"
+                );
+            }
         );
-        assertFalse(validator.validate(user).isEmpty());
     }
 
     @Test
     void createNullEmailUserTest() {
-        User user = new User(
-                null,
-                "name",
-                null
+        assertThrows(ValidationException.class, () -> {
+            User user = new User(
+                        null,
+                        "name",
+                        null
+                );
+            }
         );
-        assertFalse(validator.validate(user).isEmpty());
     }
 
     @Test
     void createIncorrectEmailUserTest() {
-        User user = new User(
-                null,
-                "name",
-                "email.com"
+        assertThrows(ValidationException.class, () -> {
+            User user = new User(
+                        null,
+                        "name",
+                        "email"
+                );
+            }
         );
-        assertFalse(validator.validate(user).isEmpty());
     }
 }
