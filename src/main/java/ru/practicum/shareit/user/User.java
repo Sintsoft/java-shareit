@@ -1,6 +1,5 @@
 package ru.practicum.shareit.user;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.utility.Entity;
 
@@ -12,7 +11,6 @@ import javax.validation.constraints.NotNull;
  * TODO Sprint add-controllers.
  */
 @Data
-@AllArgsConstructor
 public class User extends Entity {
 
     @NotNull
