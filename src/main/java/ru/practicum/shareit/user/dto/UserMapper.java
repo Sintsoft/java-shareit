@@ -18,6 +18,19 @@ public class UserMapper {
         );
     }
 
+    public static User upateFromDto(UserDto dto, User oldUser) {
+        log.debug("Updateing User: " + oldUser + " from UserDto object. UserDto = " + dto);
+        return new User(
+                oldUser.getId(),
+                dto.getName() != null
+                        && !dto.getName().equals(oldUser.getName())
+                        ? dto.getName() : oldUser.getName(),
+                dto.getEmail() != null
+                        && !dto.getEmail().equals(oldUser.getEmail())
+                        ? dto.getEmail() : oldUser.getEmail()
+        );
+    }
+
     public static UserDto toDto(User user) {
         log.debug("Mapping UserDto from User object. User = " + user);
         return new UserDto(

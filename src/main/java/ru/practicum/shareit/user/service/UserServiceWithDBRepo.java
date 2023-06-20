@@ -10,11 +10,15 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItSQLException;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItValueAlreadyTaken;
 
 import javax.validation.ConstraintViolationException;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Primary
@@ -48,11 +52,60 @@ public class UserServiceWithDBRepo implements UserService{
         } catch (DataIntegrityViolationException ex) {
             log.debug("We got SQL error");
             if (ex.getMessage().contains("constraint [uq_user_email]")) {
-                throw new ShareItInvalidEntity("Email is already taken!");
+                throw new ShareItValueAlreadyTaken("Email is already taken!");
             }
             throw new ShareItSQLException("Something bad happened, We are working to fix it.");
         }
     }
 
+    @Override
+    public UserDto updateUser(UserDto dto, Long userId) {
+        log.trace("Level: SERVICE. Call of updateUser. Payload: DTO = " + dto + ", User.id = " + userId);
+        try {
+            User updatedUser = UserMapper.upateFromDto(dto, checkUserExists(userId));
+            updatedUser = userRepo.save(updatedUser);
+            return UserMapper.toDto(updatedUser);
+        } catch (NullPointerException ex) {
+            log.info("Got null pointer exception.");
+            throw new ShareItInvalidEntity("Invalid user");
+        } catch (ConstraintViolationException ex) {
+            log.info("Incorrect user entity");
+            throw new ShareItInvalidEntity("Invalid user");
+        } catch (DataIntegrityViolationException ex) {
+            log.debug("We got SQL error");
+            if (ex.getMessage().contains("constraint [uq_user_email]")) {
+                throw new ShareItValueAlreadyTaken("Email is already taken!");
+            }
+            throw new ShareItSQLException("Something bad happened, We are working to fix it.");
+        }
+    }
 
+    @Override
+    public UserDto getUser(Long userId) {
+        log.trace("Level: SERVICE. Call of getUser. Payload: " + userId);
+        return UserMapper.toDto(checkUserExists(userId));
+    }
+
+    @Override
+    public List<UserDto> getAllUsers() {
+        log.trace("Level: SERVICE. Call of getAllUsers.");
+        return userRepo.findAll()
+                .stream()
+                .map(UserMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void removeUser(Long userId) {
+        log.trace("Level: SERVICE. Call of getUser. Payload: " + userId);
+        userRepo.delete(checkUserExists(userId));
+    }
+
+    private User checkUserExists(Long userId) {
+        Optional<User> checkUser = userRepo.findById(userId);
+        if (checkUser.isEmpty()) {
+            throw new ShareItEntityNotFound("User with id = " + userId + " not found");
+        }
+        return checkUser.get();
+    }
 }
