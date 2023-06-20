@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
+import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItSQLException;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItValueAlreadyTaken;
 
 import javax.validation.ConstraintViolationException;
@@ -18,7 +20,7 @@ import javax.validation.ConstraintViolationException;
 @Primary
 @Slf4j
 @RequiredArgsConstructor
-public class UserServiceWIthDBRepo implements UserService{
+public class UserServiceWithDBRepo implements UserService{
 
     @Autowired
     private final UserRepository userRepo;
@@ -33,7 +35,6 @@ public class UserServiceWIthDBRepo implements UserService{
             }
             log.trace("Trying to create user enity from dto.");
             User newUser = UserMapper.fromDto(dto);
-            checkEmailAvaliable(newUser.getEmail());
             log.trace("User is valid to use. Saving user.");
             newUser = userRepo.save(newUser);
             log.debug("User saved. New user id = " + newUser.getId());
@@ -44,15 +45,14 @@ public class UserServiceWIthDBRepo implements UserService{
         } catch (ConstraintViolationException ex) {
             log.info("Incorrect user entity");
             throw new ShareItInvalidEntity("Invalid user");
+        } catch (DataIntegrityViolationException ex) {
+            log.debug("We got SQL error");
+            if (ex.getMessage().contains("constraint [uq_user_email]")) {
+                throw new ShareItInvalidEntity("Email is already taken!");
+            }
+            throw new ShareItSQLException("Something bad happened, We are working to fix it.");
         }
     }
 
-    private void checkEmailAvaliable(String email) {
-        log.trace("Level: SERVICE. Call of checkEmailAvaliable. Payload: " + email);
-        if (!userRepo.findUserByEmail(email).isEmpty()) {
-            log.debug(email + " is already taken");
-            throw new ShareItValueAlreadyTaken("Email " + email + " is already taken!");
-        }
-        log.debug(email + " is free to use");
-    }
+
 }
