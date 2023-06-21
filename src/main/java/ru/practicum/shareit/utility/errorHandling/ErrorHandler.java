@@ -5,10 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItEntityNotFound;
-import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
-import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItSQLException;
-import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItValueAlreadyTaken;
+import ru.practicum.shareit.utility.errorHandling.exceptions.*;
 
 
 @Slf4j
@@ -32,6 +29,13 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse alreadyTakeValuHandler(ShareItValueAlreadyTaken ex) {
+        log.info("Level: ERROR HANDLER. Catched exception: " + ex.getClass() + ". Message: " + ex.getMessage());
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse notAllowedHandler(ShareItNotAllowedAction ex) {
         log.info("Level: ERROR HANDLER. Catched exception: " + ex.getClass() + ". Message: " + ex.getMessage());
         return new ErrorResponse(ex.getMessage());
     }
