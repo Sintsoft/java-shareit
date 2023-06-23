@@ -18,4 +18,6 @@ public interface ItemService {
     List<ItemDto> getUserItems(Long userId);
 
     List<ItemDto> searchItem(String searchString);
+
+    Item loadItem(Long itemId);
 }

@@ -39,4 +39,11 @@ public class UserMapper {
                 user.getEmail()
         );
     }
+
+    public static NestedUserDto toNestedDto(User user) {
+        log.debug("Mapping NestedUserDto from User object. User = " + user);
+        return new NestedUserDto(
+                user.getId()
+        );
+    }
 }

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.vault;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.jpa.repository.Query;

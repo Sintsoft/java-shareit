@@ -10,9 +10,8 @@ import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepository;
-import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.utility.errorHandling.exceptions.*;
 
 import javax.validation.ConstraintViolationException;
@@ -31,7 +30,7 @@ public class ItemServiceWithDBRepo implements ItemService {
     private final ItemRepository itemRepo;
 
     @Autowired
-    private final UserRepository userRepo;
+    private final UserService userService;
 
     @Override
     public ItemDto createItem(ItemDto dto, Long userId) {
@@ -41,7 +40,7 @@ public class ItemServiceWithDBRepo implements ItemService {
             Item newItem = validateItem(ItemMapper.fromDto(dto));
 
             log.trace("Item is vaild. Validating user... ");
-            newItem.setUser(checkUserExists(userId));
+            newItem.setUser(userService.loadUser(userId));
 
             log.trace("User is valid. Saving item ...");
             newItem = itemRepo.save(newItem);
@@ -68,14 +67,14 @@ public class ItemServiceWithDBRepo implements ItemService {
         log.trace("Level: SERVICE. Call of createItem. Payload: " + dto);
         try {
             log.trace("Validating item exists");
-            Item updatedItem = checkItemExists(itemId);
+            Item updatedItem = loadItem(itemId);
 
             log.trace("Item is vaild. Validating user... ");
             if (updatedItem.getUser().getId() != userId) {
                 log.info("Incorrect item owner id.");
                 throw new ShareItNotAllowedAction("Incorrect item owner id.");
             }
-            User owner = checkUserExists(userId); // Проверим консистентность данных
+            User owner = userService.loadUser(userId); // Проверим консистентность данных
 
             log.trace("User is valid. Saving item ...");
             updatedItem = ItemMapper.updateFromDto(updatedItem, dto);
@@ -100,13 +99,13 @@ public class ItemServiceWithDBRepo implements ItemService {
     @Override
     public ItemDto getItem(Long itemId) {
         log.trace("Level: SERVICE. Call of getItem. Payload: " + itemId);
-        return ItemMapper.toDto(checkItemExists(itemId));
+        return ItemMapper.toDto(loadItem(itemId));
     }
 
     @Override
     public List<ItemDto> getUserItems(Long userId) {
         log.trace("Level: SERVICE. Call of getUserItems. Payload: " + userId);
-        return itemRepo.findUserItems(checkUserExists(userId))
+        return itemRepo.findUserItems(userService.loadUser(userId))
                 .stream()
                 .map(ItemMapper::toDto)
                 .collect(Collectors.toList());
@@ -125,6 +124,17 @@ public class ItemServiceWithDBRepo implements ItemService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public Item loadItem(Long itemId) {
+        log.trace("Level: SERVICE. Call of checkItemExists. Payload: " + itemId);
+        Optional<Item> item = itemRepo.findById(itemId);
+        if (item.isEmpty()) {
+            log.debug("No user with id = " + itemId);
+            throw new ShareItEntityNotFound("No user with id = " + itemId);
+        }
+        return item.get();
+    }
+
     private Item validateItem(Item item) {
         log.trace("Level: SERVICE. Call of validateItem. Payload: " + item);
         if (!Validation
@@ -136,27 +146,4 @@ public class ItemServiceWithDBRepo implements ItemService {
         return item;
     }
 
-    private Item checkItemExists(Long itemId) {
-        log.trace("Level: SERVICE. Call of checkItemExists. Payload: " + itemId);
-        Optional<Item> item = itemRepo.findById(itemId);
-        if (item.isEmpty()) {
-            log.debug("No user with id = " + itemId);
-            throw new ShareItEntityNotFound("No user with id = " + itemId);
-        }
-        return item.get();
-    }
-
-    private User checkUserExists(Long userId) {
-        log.trace("Level: SERVICE. Call of checkUserExists. Payload: " + userId);
-        if (userId == null) {
-            log.debug("User id can not be null");
-            throw new ShareItInvalidEntity("Set item owner in header");
-        }
-        Optional<User> owner = userRepo.findById(userId);
-        if (owner.isEmpty()) {
-            log.debug("No user with id = " + userId);
-            throw new ShareItEntityNotFound("No user with id = " + userId);
-        }
-        return owner.get();
-    }
 }

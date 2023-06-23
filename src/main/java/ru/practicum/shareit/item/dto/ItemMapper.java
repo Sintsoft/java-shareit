@@ -45,4 +45,11 @@ public class ItemMapper {
                 item.getRequest() != null ? item.getRequest().getId() : null
         );
     }
+
+    public static NestedItemDto toNestedDto(Item item) {
+        return new NestedItemDto(
+                item.getId(),
+                item.getName()
+        );
+    }
 }
