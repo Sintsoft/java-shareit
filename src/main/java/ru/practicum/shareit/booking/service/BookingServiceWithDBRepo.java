@@ -7,13 +7,16 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.dto.BookingRepository;
+import ru.practicum.shareit.booking.dto.ResponseBookingDto;
+import ru.practicum.shareit.booking.vault.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
+import ru.practicum.shareit.booking.vault.BookingStorage;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.item.vault.ItemStorage;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.vault.UserStorage;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItNotAllowedAction;
@@ -28,31 +31,26 @@ import java.util.Optional;
 public class BookingServiceWithDBRepo implements BookingService {
 
     @Autowired
-    private final BookingRepository bookingRepo;
+    private final BookingStorage bookingStorage;
 
     @Autowired
-    private final UserService userService;
+    private final UserStorage userStorage;
 
     @Autowired
-    private final ItemService itemService;
+    private final ItemStorage itemStorage;
 
 
     @Override
     public BookingDto createBooking(BookingDto dto, Long userId) {
         try {
-            if (dto.getStart().isAfter(dto.getEnd())
-                    || dto.getStart().isEqual(dto.getEnd())
-                    || dto.getStart().isBefore(LocalDateTime.now())) {
-                throw new ShareItInvalidEntity("Set coorrect time");
-            }
-            Item bookedItem = itemService.loadItem(dto.getItemId());
+            Item bookedItem = itemStorage.loadItem(dto.getItemId());
             if (!bookedItem.getAvailable()) {
                 throw new ShareItInvalidEntity("Can't book inavaliable item");
             }
-            User booker = userService.loadUser(userId);
-            Booking newBooking = BookingMapper.fromDto(dto, bookedItem, booker);
-            newBooking = bookingRepo.save(newBooking);
-            return BookingMapper.toDto(newBooking);
+            User booker = userStorage.loadUser(userId);
+            return BookingMapper.toDto(
+                    bookingStorage.createBooking(
+                            BookingMapper.fromDto(dto, bookedItem, booker)));
         } catch (NullPointerException ex) {
             throw new ShareItInvalidEntity("Got null pointer");
         }
@@ -61,8 +59,8 @@ public class BookingServiceWithDBRepo implements BookingService {
     @Override
     public BookingDto approveBooking(long bookingId, boolean approved, long userId) {
         try {
-            Booking approvedBooking = loadBooking(bookingId);
-            if (itemService.loadItem(approvedBooking.getItem().getId()).getUser().getId() != userId) {
+            Booking approvedBooking = bookingStorage.loadBooking(bookingId);
+            if (itemStorage.loadItem(approvedBooking.getItem().getId()).getUser().getId() != userId) {
                 throw new ShareItNotAllowedAction("This user can't approve this booking");
             }
             if (approved &&
@@ -77,19 +75,15 @@ public class BookingServiceWithDBRepo implements BookingService {
             } else {
                 throw new ShareItInvalidEntity("Invalid request");
             }
-            return BookingMapper.toDto(bookingRepo.save(approvedBooking));
+            return BookingMapper.toDto(bookingStorage.updateBooking(approvedBooking));
         } catch (NullPointerException ex) {
             throw new ShareItInvalidEntity("Got null pointer");
         }
     }
 
     @Override
-    public Booking loadBooking(long bookingId) {
-        Optional<Booking> optionalBooking = bookingRepo.findById(bookingId);
-        if (optionalBooking.isEmpty()) {
-            throw new ShareItEntityNotFound("Booking not found");
-        }
-        return optionalBooking.get();
+    public ResponseBookingDto getBooking(Long bookingId, Long userId) {
+        return null; // bookingStorage.loadBooking(bookingId);
     }
 
 }

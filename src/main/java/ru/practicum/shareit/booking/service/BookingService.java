@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.ResponseBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
 
 import javax.validation.constraints.NotNull;
@@ -13,5 +14,5 @@ public interface BookingService {
 
     BookingDto approveBooking(long bookingId, boolean approved, long userId);
 
-    Booking loadBooking(long bookingId);
+    ResponseBookingDto getBooking(Long bookingId, Long userId);
 }

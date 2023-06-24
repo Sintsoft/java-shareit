@@ -6,12 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.ItemRepository;
+import ru.practicum.shareit.item.vault.ItemRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.vault.ItemStorage;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.vault.UserStorage;
 import ru.practicum.shareit.utility.errorHandling.exceptions.*;
 
 import javax.validation.ConstraintViolationException;
@@ -27,38 +28,29 @@ import java.util.stream.Collectors;
 public class ItemServiceWithDBRepo implements ItemService {
 
     @Autowired
-    private final ItemRepository itemRepo;
+    private final ItemStorage itemStorage;
 
     @Autowired
-    private final UserService userService;
+    private final UserStorage userStorage;
 
     @Override
     public ItemDto createItem(ItemDto dto, Long userId) {
         log.trace("Level: SERVICE. Call of createItem. Payload: " + dto);
         try {
-            log.trace("Validating item");
-            Item newItem = validateItem(ItemMapper.fromDto(dto));
+            log.trace("Parsing item");
+            Item newItem = ItemMapper.fromDto(dto);
 
             log.trace("Item is vaild. Validating user... ");
-            newItem.setUser(userService.loadUser(userId));
+            newItem.setUser(userStorage.loadUser(userId));
 
             log.trace("User is valid. Saving item ...");
-            newItem = itemRepo.save(newItem);
-
-            log.trace("Item saved");
-            return ItemMapper.toDto(newItem);
+            return ItemMapper.toDto(itemStorage.createItem(newItem));
         } catch (NullPointerException ex) {
             log.info("Got null pointer exception.");
             throw new ShareItInvalidEntity("Invalid item");
         } catch (ConstraintViolationException ex) {
             log.info("Incorrect item entity");
             throw new ShareItInvalidEntity("Invalid item");
-        } catch (DataIntegrityViolationException ex) {
-            log.debug("We got SQL error");
-            if (ex.getMessage().contains("constraint [uq_user_email]")) {
-                throw new ShareItValueAlreadyTaken("Email is already taken!");
-            }
-            throw new ShareItSQLException("Something bad happened, We are working to fix it.");
         }
     }
 
@@ -67,45 +59,39 @@ public class ItemServiceWithDBRepo implements ItemService {
         log.trace("Level: SERVICE. Call of createItem. Payload: " + dto);
         try {
             log.trace("Validating item exists");
-            Item updatedItem = loadItem(itemId);
+            Item itemToUpd = itemStorage.loadItem(itemId);
 
             log.trace("Item is vaild. Validating user... ");
-            if (updatedItem.getUser().getId() != userId) {
+            if (itemToUpd.getUser().getId() != userId) {
                 log.info("Incorrect item owner id.");
                 throw new ShareItNotAllowedAction("Incorrect item owner id.");
             }
-            User owner = userService.loadUser(userId); // Проверим консистентность данных
+            User owner = userStorage.loadUser(userId); // Проверим консистентность данных
 
             log.trace("User is valid. Saving item ...");
-            updatedItem = ItemMapper.updateFromDto(updatedItem, dto);
-            updatedItem = itemRepo.save(updatedItem);
 
-            return ItemMapper.toDto(updatedItem);
+            return ItemMapper.toDto(
+                    itemStorage.updateItem(
+                            ItemMapper.updateFromDto(itemToUpd, dto)));
         } catch (NullPointerException ex) {
             log.info("Got null pointer exception.");
             throw new ShareItInvalidEntity("Invalid item");
         } catch (ConstraintViolationException ex) {
             log.info("Incorrect item entity");
             throw new ShareItInvalidEntity("Invalid item");
-        } catch (DataIntegrityViolationException ex) {
-            log.debug("We got SQL error");
-            if (ex.getMessage().contains("constraint [uq_user_email]")) {
-                throw new ShareItValueAlreadyTaken("Email is already taken!");
-            }
-            throw new ShareItSQLException("Something bad happened, We are working to fix it.");
         }
     }
 
     @Override
     public ItemDto getItem(Long itemId) {
         log.trace("Level: SERVICE. Call of getItem. Payload: " + itemId);
-        return ItemMapper.toDto(loadItem(itemId));
+        return ItemMapper.toDto(itemStorage.loadItem(itemId));
     }
 
     @Override
     public List<ItemDto> getUserItems(Long userId) {
         log.trace("Level: SERVICE. Call of getUserItems. Payload: " + userId);
-        return itemRepo.findUserItems(userService.loadUser(userId))
+        return itemStorage.loadUserItems(userStorage.loadUser(userId))
                 .stream()
                 .map(ItemMapper::toDto)
                 .collect(Collectors.toList());
@@ -117,33 +103,11 @@ public class ItemServiceWithDBRepo implements ItemService {
         if (searchString.isEmpty() || searchString.isBlank()) {
             return List.of();
         }
-        return itemRepo.findByNameOrDescriptionContainingIgnoreCase(searchString, searchString)
+        return itemStorage.searchForItems(searchString)
                 .stream()
                 .filter(i -> i.getAvailable() == true)
                 .map(ItemMapper::toDto)
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public Item loadItem(Long itemId) {
-        log.trace("Level: SERVICE. Call of checkItemExists. Payload: " + itemId);
-        Optional<Item> item = itemRepo.findById(itemId);
-        if (item.isEmpty()) {
-            log.debug("No user with id = " + itemId);
-            throw new ShareItEntityNotFound("No user with id = " + itemId);
-        }
-        return item.get();
-    }
-
-    private Item validateItem(Item item) {
-        log.trace("Level: SERVICE. Call of validateItem. Payload: " + item);
-        if (!Validation
-                .buildDefaultValidatorFactory()
-                .getValidator()
-                .validate(item).isEmpty()) {
-            throw new ShareItInvalidEntity("Incorrect item");
-        }
-        return item;
     }
 
 }

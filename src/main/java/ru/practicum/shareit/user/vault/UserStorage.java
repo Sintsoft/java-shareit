@@ -35,7 +35,11 @@ public class UserStorage {
 
     public User updateUser(@Validated User user) {
         log.trace("Level: STORAGE. Call of updateUser. Payload: " + user);
-        saveToRepo(user);
+        if (user.getId() == null) {
+            log.debug("Dto.id is null. Need to use create method.");
+            throw new ShareItInvalidEntity("Can not create User with id.");
+        }
+        return saveToRepo(user);
     }
 
     public User loadUser(@Positive Long userId) {

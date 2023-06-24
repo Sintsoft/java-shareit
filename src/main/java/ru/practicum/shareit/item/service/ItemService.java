@@ -19,5 +19,4 @@ public interface ItemService {
 
     List<ItemDto> searchItem(String searchString);
 
-    Item loadItem(Long itemId);
 }
