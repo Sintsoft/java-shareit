@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.service;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.RequestBookingDto;
 import ru.practicum.shareit.booking.dto.ResponseBookingDto;
+import ru.practicum.shareit.booking.model.BookingRequestStatus;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface BookingService {
 
     ResponseBookingDto getBooking(Long bookingId, Long userId);
 
-    List<ResponseBookingDto> getUserBookings(Long userId);
+    List<ResponseBookingDto> getUserBookings(Long userId, String status);
 
-    public List<ResponseBookingDto> getUserItemsBookings(Long userId);
+    public List<ResponseBookingDto> getUserItemsBookings(Long userId, String status);
 }

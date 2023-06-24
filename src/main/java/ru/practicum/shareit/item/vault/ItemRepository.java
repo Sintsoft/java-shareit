@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    @Query("select i from Item i where i.user = ?1")
+    @Query("select i from Item i where i.user = ?1 order by i.id asc")
     List<Item> findUserItems(User user);
 
     List<Item> findByNameOrDescriptionContainingIgnoreCase(String nameSearchString, String descriptionSearchString);

@@ -38,4 +38,16 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
+    public boolean isCurrent() {
+        return this.start.isAfter(LocalDateTime.now())
+                && this.end.isBefore(LocalDateTime.now());
+    }
+
+    public boolean isPast() {
+        return this.end.isBefore(LocalDateTime.now());
+    }
+
+    public boolean isFuture() {
+        return this.start.isAfter(LocalDateTime.now());
+    }
 }

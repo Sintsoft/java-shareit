@@ -41,7 +41,7 @@ public class ItemMapper {
         );
     }
 
-    public static ResponseItemDto toDto(Item item) {
+    public static ResponseItemDto toDto(Item item, Booking last, Booking next) {
         return new ResponseItemDto(
                 item.getId(),
                 item.getName(),
@@ -49,8 +49,19 @@ public class ItemMapper {
                 item.getAvailable(),
                 item.getUser() != null ? item.getUser().getId() : null,
                 item.getRequest() != null ? item.getRequest().getId() : null,
-                null,
-                null
+                last != null ? BookingMapper.toNested(last) : null,
+                next != null ? BookingMapper.toNested(next) : null
+        );
+    }
+
+    public static ResponseSingleItemDto toDtoForSinle(Item item, Booking last, Booking next) {
+        return new ResponseSingleItemDto(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.getAvailable(),
+                item.getUser() != null ? item.getUser().getId() : null,
+                item.getRequest() != null ? item.getRequest().getId() : null
         );
     }
 

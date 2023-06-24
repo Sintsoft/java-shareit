@@ -25,7 +25,8 @@ public class BookingMapper {
 
     public static NestedBookingDto toNested(Booking booking) {
         return new NestedBookingDto(
-
+            booking.getId(),
+            booking.getBooker().getId()
         );
     }
 

@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.RequestItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
+import ru.practicum.shareit.item.dto.ResponseSingleItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
@@ -29,16 +30,17 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     ResponseItemDto patchItem(@Validated @RequestBody RequestItemDto itemDto,
-                     @RequestHeader(value = "X-Sharer-User-Id") Long userId,
-                     @PathVariable Long itemId) {
+                              @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+                              @PathVariable Long itemId) {
         log.trace("Level: CONTROLLER. Call of patchItem. Payload: " + itemDto + " " + itemId + " " + userId);
         return service.updateItem(itemDto, itemId, userId);
     }
 
     @GetMapping("/{itemId}")
-    ResponseItemDto getItem(@PathVariable Long itemId) {
+    ResponseItemDto getItem(@PathVariable Long itemId,
+                            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
         log.trace("Level: CONTROLLER. Call of postItem. Payload: " + itemId);
-        return service.getItem(itemId);
+        return service.getItem(itemId, userId);
     }
 
     @GetMapping

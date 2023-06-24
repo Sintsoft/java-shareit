@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.vault.BookingStorage;
 import ru.practicum.shareit.item.dto.RequestItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.ResponseSingleItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.vault.ItemStorage;
 import ru.practicum.shareit.user.model.User;
@@ -30,6 +32,9 @@ public class ItemServiceWithDBRepo implements ItemService {
     @Autowired
     private final UserStorage userStorage;
 
+    @Autowired
+    private final BookingStorage bookingStorage;
+
     @Override
     public ResponseItemDto createItem(RequestItemDto dto, Long userId) {
         log.trace("Level: SERVICE. Call of createItem. Payload: " + dto);
@@ -41,7 +46,7 @@ public class ItemServiceWithDBRepo implements ItemService {
             newItem.setUser(userStorage.loadUser(userId));
 
             log.trace("User is valid. Saving item ...");
-            return ItemMapper.toDto(itemStorage.createItem(newItem));
+            return ItemMapper.toDto(itemStorage.createItem(newItem), null, null);
         } catch (NullPointerException ex) {
             log.info("Got null pointer exception.");
             throw new ShareItInvalidEntity("Invalid item");
@@ -66,10 +71,12 @@ public class ItemServiceWithDBRepo implements ItemService {
             User owner = userStorage.loadUser(userId); // Проверим консистентность данных
 
             log.trace("User is valid. Saving item ...");
-
+            itemToUpd = ItemMapper.updateFromDto(itemToUpd, dto);
             return ItemMapper.toDto(
                     itemStorage.updateItem(
-                            ItemMapper.updateFromDto(itemToUpd, dto)));
+                        itemToUpd),
+                        bookingStorage.loadItemLastBooking(itemToUpd),
+                        bookingStorage.loadItemNextBooking(itemToUpd));
         } catch (NullPointerException ex) {
             log.info("Got null pointer exception.");
             throw new ShareItInvalidEntity("Invalid item");
@@ -80,9 +87,17 @@ public class ItemServiceWithDBRepo implements ItemService {
     }
 
     @Override
-    public ResponseItemDto getItem(Long itemId) {
+    public ResponseItemDto getItem(Long itemId, Long userId) {
         log.trace("Level: SERVICE. Call of getItem. Payload: " + itemId);
-        return ItemMapper.toDto(itemStorage.loadItem(itemId));
+        Item searchItem = itemStorage.loadItem(itemId);
+        if (searchItem.getUser().getId() == userId) {
+            return ItemMapper.toDto(
+                    searchItem,
+                    bookingStorage.loadItemLastBooking(searchItem),
+                    bookingStorage.loadItemNextBooking(searchItem));
+        }
+        return ItemMapper.toDto(
+                searchItem, null, null);
     }
 
     @Override
@@ -90,7 +105,11 @@ public class ItemServiceWithDBRepo implements ItemService {
         log.trace("Level: SERVICE. Call of getUserItems. Payload: " + userId);
         return itemStorage.loadUserItems(userStorage.loadUser(userId))
                 .stream()
-                .map(ItemMapper::toDto)
+                .map(
+                        x -> ItemMapper.toDto(x,
+                                bookingStorage.loadItemLastBooking(x),
+                                bookingStorage.loadItemNextBooking(x))
+                )
                 .collect(Collectors.toList());
     }
 
@@ -103,7 +122,11 @@ public class ItemServiceWithDBRepo implements ItemService {
         return itemStorage.searchForItems(searchString)
                 .stream()
                 .filter(i -> i.getAvailable() == true)
-                .map(ItemMapper::toDto)
+                .map(
+                        x -> ItemMapper.toDto(x,
+                                bookingStorage.loadItemLastBooking(x),
+                                bookingStorage.loadItemNextBooking(x))
+                )
                 .collect(Collectors.toList());
     }
 

@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
@@ -59,6 +61,28 @@ public class BookingStorage {
     @Transactional
     public List<Booking> loadUserItemsBookings(User user) {
         return repository.getUserItemsBookings(user);
+    }
+
+    @Transactional
+    public Booking loadItemLastBooking(Item item) {
+        List<Booking> lastBookingList = repository.getItemLastBooking(item.getId());
+        if (lastBookingList.isEmpty()) {
+            return null;
+        } else if (lastBookingList.size() > 1) {
+            throw new ShareItSQLException("Too much last items");
+        }
+        return lastBookingList.get(0);
+    }
+
+    @Transactional
+    public Booking loadItemNextBooking(Item item) {
+        List<Booking> lastBookingList = repository.getItemNextBooking(item.getId());
+        if (lastBookingList.isEmpty()) {
+            return null;
+        } else if (lastBookingList.size() > 1) {
+            throw new ShareItSQLException("Too much last items");
+        }
+        return lastBookingList.get(0);
     }
 
     @Transactional

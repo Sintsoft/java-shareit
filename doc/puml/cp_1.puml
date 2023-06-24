@@ -22,7 +22,7 @@ rectangle "Внутренний слой" {
     component "Storage" as st4
 }
 
-database "Реопзитории" {
+database "Репозитории" {
     interface "Repository" as rp1
     interface "Repository" as rp2
     interface "Repository" as rp3

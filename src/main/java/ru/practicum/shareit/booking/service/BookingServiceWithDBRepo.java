@@ -9,15 +9,19 @@ import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.RequestBookingDto;
 import ru.practicum.shareit.booking.dto.ResponseBookingDto;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingRequestStatus;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.vault.BookingStorage;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.vault.ItemStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.vault.UserStorage;
+import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItEntityNotFound;
+import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInnerException;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItNotAllowedAction;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -45,6 +49,9 @@ public class BookingServiceWithDBRepo implements BookingService {
                 throw new ShareItInvalidEntity("Can't book inavaliable item");
             }
             User booker = userStorage.loadUser(userId);
+            if (booker.getId() == bookedItem.getId()) {
+                throw new ShareItEntityNotFound("Owner can't book own item");
+            }
             return BookingMapper.toDto(
                     bookingStorage.createBooking(
                             BookingMapper.fromDto(dto, bookedItem, booker)));
@@ -58,7 +65,7 @@ public class BookingServiceWithDBRepo implements BookingService {
         try {
             Booking approvedBooking = bookingStorage.loadBooking(bookingId);
             if (itemStorage.loadItem(approvedBooking.getItem().getId()).getUser().getId() != userId) {
-                throw new ShareItNotAllowedAction("This user can't approve this booking");
+                throw new ShareItEntityNotFound("This user can't approve this booking");
             }
             if (approved &&
                     !(
@@ -82,24 +89,60 @@ public class BookingServiceWithDBRepo implements BookingService {
     public ResponseBookingDto getBooking(Long bookingId, Long userId) {
         Booking bookIng = bookingStorage.loadBooking(bookingId);
         if (bookIng.getBooker().getId() != userId && bookIng.getItem().getUser().getId() != userId) {
-            throw new ShareItNotAllowedAction("U can't view this booking");
+            throw new ShareItEntityNotFound("Сan't find this booking");
         }
         return BookingMapper.toDto(bookIng);
     }
 
     @Override
-    public List<ResponseBookingDto> getUserBookings(Long userId) {
-        return bookingStorage.loadUserBookings(
+    public List<ResponseBookingDto> getUserBookings(Long userId, String stringStatus) {
+        try {
+            BookingRequestStatus status = BookingRequestStatus.valueOf(stringStatus);
+            return bookingStorage.loadUserBookings(
                 userStorage.loadUser(userId))
-                .stream().map(BookingMapper::toDto)
+                .stream()
+                .filter(x ->
+                        status.equals(BookingRequestStatus.ALL)
+                                || (status.equals(BookingRequestStatus.CURRENT) && x.isCurrent())
+                                || (status.equals(BookingRequestStatus.PAST)
+                                    && x.isPast())
+                                    && x.getStatus().equals(BookingStatus.APPROVED)
+                                || (status.equals(BookingRequestStatus.FUTURE) && x.isFuture())
+                                || (status.equals(BookingRequestStatus.REJECTED)
+                                    && x.getStatus().equals(BookingStatus.REJECTED))
+                                || (status.equals(BookingRequestStatus.WAITING)
+                                    && x.getStatus().equals(BookingStatus.WAITING))
+                )
+                .map(BookingMapper::toDto)
                 .collect(Collectors.toList());
+        } catch (IllegalArgumentException ex) {
+            throw new ShareItInnerException("Unknown state: UNSUPPORTED_STATUS");
+        }
     }
 
     @Override
-    public List<ResponseBookingDto> getUserItemsBookings(Long userId) {
-        return bookingStorage.loadUserItemsBookings(
-                        userStorage.loadUser(userId))
-                .stream().map(BookingMapper::toDto)
-                .collect(Collectors.toList());
+    public List<ResponseBookingDto> getUserItemsBookings(Long userId, String stringStatus) {
+        try {
+            BookingRequestStatus status = BookingRequestStatus.valueOf(stringStatus);
+            return bookingStorage.loadUserItemsBookings(
+                            userStorage.loadUser(userId))
+                    .stream()
+                    .filter(x ->
+                            status.equals(BookingRequestStatus.ALL)
+                                    || (status.equals(BookingRequestStatus.CURRENT) && x.isCurrent())
+                                    || (status.equals(BookingRequestStatus.PAST)
+                                    && x.isPast())
+                                    && x.getStatus().equals(BookingStatus.APPROVED)
+                                    || (status.equals(BookingRequestStatus.FUTURE) && x.isFuture())
+                                    || (status.equals(BookingRequestStatus.REJECTED)
+                                    && x.getStatus().equals(BookingStatus.REJECTED))
+                                    || (status.equals(BookingRequestStatus.WAITING)
+                                    && x.getStatus().equals(BookingStatus.WAITING))
+                    )
+                    .map(BookingMapper::toDto)
+                    .collect(Collectors.toList());
+        } catch (IllegalArgumentException ex) {
+            throw new ShareItInnerException("Unknown state: UNSUPPORTED_STATUS");
+        }
     }
 }
