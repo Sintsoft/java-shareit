@@ -4,10 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.vault.ItemRepository;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.RequestItemDto;
+import ru.practicum.shareit.item.dto.ResponseItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.vault.ItemStorage;
@@ -16,9 +15,7 @@ import ru.practicum.shareit.user.vault.UserStorage;
 import ru.practicum.shareit.utility.errorHandling.exceptions.*;
 
 import javax.validation.ConstraintViolationException;
-import javax.validation.Validation;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +31,7 @@ public class ItemServiceWithDBRepo implements ItemService {
     private final UserStorage userStorage;
 
     @Override
-    public ItemDto createItem(ItemDto dto, Long userId) {
+    public ResponseItemDto createItem(RequestItemDto dto, Long userId) {
         log.trace("Level: SERVICE. Call of createItem. Payload: " + dto);
         try {
             log.trace("Parsing item");
@@ -55,7 +52,7 @@ public class ItemServiceWithDBRepo implements ItemService {
     }
 
     @Override
-    public ItemDto updateItem(ItemDto dto, Long itemId, Long userId) {
+    public ResponseItemDto updateItem(RequestItemDto dto, Long itemId, Long userId) {
         log.trace("Level: SERVICE. Call of createItem. Payload: " + dto);
         try {
             log.trace("Validating item exists");
@@ -83,13 +80,13 @@ public class ItemServiceWithDBRepo implements ItemService {
     }
 
     @Override
-    public ItemDto getItem(Long itemId) {
+    public ResponseItemDto getItem(Long itemId) {
         log.trace("Level: SERVICE. Call of getItem. Payload: " + itemId);
         return ItemMapper.toDto(itemStorage.loadItem(itemId));
     }
 
     @Override
-    public List<ItemDto> getUserItems(Long userId) {
+    public List<ResponseItemDto> getUserItems(Long userId) {
         log.trace("Level: SERVICE. Call of getUserItems. Payload: " + userId);
         return itemStorage.loadUserItems(userStorage.loadUser(userId))
                 .stream()
@@ -98,7 +95,7 @@ public class ItemServiceWithDBRepo implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItem(String searchString) {
+    public List<ResponseItemDto> searchItem(String searchString) {
         log.trace("Level: SERVICE. Method: searchItem. Payload: " + searchString);
         if (searchString.isEmpty() || searchString.isBlank()) {
             return List.of();

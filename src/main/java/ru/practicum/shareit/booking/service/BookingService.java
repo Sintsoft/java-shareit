@@ -1,18 +1,22 @@
 package ru.practicum.shareit.booking.service;
 
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.RequestBookingDto;
 import ru.practicum.shareit.booking.dto.ResponseBookingDto;
-import ru.practicum.shareit.booking.model.Booking;
 
-import javax.validation.constraints.NotNull;
+import java.util.List;
+
 
 @Service
 public interface BookingService {
 
-    BookingDto createBooking(BookingDto dto, Long userId);
+    ResponseBookingDto createBooking(RequestBookingDto dto, Long userId);
 
-    BookingDto approveBooking(long bookingId, boolean approved, long userId);
+    ResponseBookingDto approveBooking(long bookingId, boolean approved, long userId);
 
     ResponseBookingDto getBooking(Long bookingId, Long userId);
+
+    List<ResponseBookingDto> getUserBookings(Long userId);
+
+    public List<ResponseBookingDto> getUserItemsBookings(Long userId);
 }

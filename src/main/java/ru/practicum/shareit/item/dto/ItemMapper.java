@@ -1,15 +1,21 @@
 package ru.practicum.shareit.item.dto;
 
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
 
 public class ItemMapper {
 
     private ItemMapper() {
     }
 
-    public static Item fromDto(ItemDto dto) {
+    public static Item fromDto(RequestItemDto dto) {
+        if (dto.getName().isBlank() || dto.getAvailable() == null || dto.getDescription().isBlank()) {
+            throw new ShareItInvalidEntity("Blank fields in item.");
+        }
         return new Item(
-                dto.getId(),
+                null,
                 null,
                 dto.getName(),
                 dto.getDescription(),
@@ -18,7 +24,7 @@ public class ItemMapper {
         );
     }
 
-    public static Item updateFromDto(Item updateItem, ItemDto dto) {
+    public static Item updateFromDto(Item updateItem, RequestItemDto dto) {
         return new Item(
                 updateItem.getId(),
                 updateItem.getUser(),
@@ -35,14 +41,16 @@ public class ItemMapper {
         );
     }
 
-    public static ItemDto toDto(Item item) {
-        return new ItemDto(
+    public static ResponseItemDto toDto(Item item) {
+        return new ResponseItemDto(
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
                 item.getAvailable(),
                 item.getUser() != null ? item.getUser().getId() : null,
-                item.getRequest() != null ? item.getRequest().getId() : null
+                item.getRequest() != null ? item.getRequest().getId() : null,
+                null,
+                null
         );
     }
 

@@ -52,6 +52,16 @@ public class BookingStorage {
     }
 
     @Transactional
+    public List<Booking> loadUserBookings(User user) {
+        return repository.getUserBookings(user);
+    }
+
+    @Transactional
+    public List<Booking> loadUserItemsBookings(User user) {
+        return repository.getUserItemsBookings(user);
+    }
+
+    @Transactional
     private Booking saveToRepo(Booking booking) {
         try {
             if (booking.getStart().isAfter(booking.getEnd())
@@ -65,4 +75,5 @@ public class BookingStorage {
             throw new ShareItSQLException("Something bad happened, We are working to fix it.");
         }
     }
+
 }

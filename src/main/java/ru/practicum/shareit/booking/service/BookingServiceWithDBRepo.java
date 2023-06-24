@@ -5,24 +5,21 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.dto.RequestBookingDto;
 import ru.practicum.shareit.booking.dto.ResponseBookingDto;
-import ru.practicum.shareit.booking.vault.BookingRepository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.vault.BookingStorage;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.vault.ItemStorage;
-import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.vault.UserStorage;
-import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItNotAllowedAction;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,7 +38,7 @@ public class BookingServiceWithDBRepo implements BookingService {
 
 
     @Override
-    public BookingDto createBooking(BookingDto dto, Long userId) {
+    public ResponseBookingDto createBooking(RequestBookingDto dto, Long userId) {
         try {
             Item bookedItem = itemStorage.loadItem(dto.getItemId());
             if (!bookedItem.getAvailable()) {
@@ -57,7 +54,7 @@ public class BookingServiceWithDBRepo implements BookingService {
     }
 
     @Override
-    public BookingDto approveBooking(long bookingId, boolean approved, long userId) {
+    public ResponseBookingDto approveBooking(long bookingId, boolean approved, long userId) {
         try {
             Booking approvedBooking = bookingStorage.loadBooking(bookingId);
             if (itemStorage.loadItem(approvedBooking.getItem().getId()).getUser().getId() != userId) {
@@ -83,7 +80,26 @@ public class BookingServiceWithDBRepo implements BookingService {
 
     @Override
     public ResponseBookingDto getBooking(Long bookingId, Long userId) {
-        return null; // bookingStorage.loadBooking(bookingId);
+        Booking bookIng = bookingStorage.loadBooking(bookingId);
+        if (bookIng.getBooker().getId() != userId && bookIng.getItem().getUser().getId() != userId) {
+            throw new ShareItNotAllowedAction("U can't view this booking");
+        }
+        return BookingMapper.toDto(bookIng);
     }
 
+    @Override
+    public List<ResponseBookingDto> getUserBookings(Long userId) {
+        return bookingStorage.loadUserBookings(
+                userStorage.loadUser(userId))
+                .stream().map(BookingMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ResponseBookingDto> getUserItemsBookings(Long userId) {
+        return bookingStorage.loadUserItemsBookings(
+                        userStorage.loadUser(userId))
+                .stream().map(BookingMapper::toDto)
+                .collect(Collectors.toList());
+    }
 }

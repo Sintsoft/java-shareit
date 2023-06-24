@@ -12,24 +12,29 @@ public class BookingMapper {
     private BookingMapper() {
     }
 
-    public static Booking fromDto(BookingDto dto, Item item, User booker) {
+    public static Booking fromDto(RequestBookingDto dto, Item item, User booker) {
         return new Booking(
                 null,
                 item,
                 dto.getStart(),
                 dto.getEnd(),
                 booker,
-                dto.getStatus() == null ? BookingStatus.WAITING : BookingStatus.valueOf(dto.getStatus())
+                BookingStatus.WAITING
         );
     }
 
-    public static BookingDto toDto(Booking booking) {
-        return new BookingDto(
+    public static NestedBookingDto toNested(Booking booking) {
+        return new NestedBookingDto(
+
+        );
+    }
+
+    public static ResponseBookingDto toDto(Booking booking) {
+        return new ResponseBookingDto(
                 booking.getId(),
-                null,
                 ItemMapper.toNestedDto(booking.getItem()),
-                booking.getStartDate(),
-                booking.getEndDate(),
+                booking.getStart(),
+                booking.getEnd(),
                 UserMapper.toNestedDto(booking.getBooker()),
                 booking.getStatus().toString()
         );

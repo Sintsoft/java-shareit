@@ -1,59 +1,22 @@
 # Слои приложения 
 
 
+Внутрення структура разделена слудующим образом:
 
-```plantuml
-@startuml
+![cp_1.png](img%2Fcp_1.png)
 
-participant Controller
-participant Service
-participant Storage
-participant Repository
-database DB
+ - Controllers:
+   - принимает REST запросы извне и формирует DTO для сервиса
+   - принимает от сервиса DTO или ошибкаи и возвращает из ответом на запросы
+ - Services:
+   - Принимают DTO от контроллера, 
+   - собирает их хранилищ объекты, которые необходимо обработать
+   - Обрабатывает объекты согласно бизнес логике
+   - Формирует ответную DTO и возвращает в контроллер
+ - Stroages:
+   - принимает от сервисов запрос на подготовленные CRUD операции с сущностями в рпеозиторий
+   - обрабатывает результаты пришедшие от репозитория
+ - Repositories:
+   - Выполняет HQL запросы в БД
 
-note over Controller, Service
-Используют DTO
-end note 
-/ note over Storage, Repository
-Используют Entity
-end note
-note over Controller 
-Обрабатывает приходящие
-REST заросы, мапит их 
-во входные DTO
-end note
-/ note over Service
-Реализует бизнес-логику
-Собирает объекты из 
-разных storage и возвращает
-Выходные DTO
-end note
-/ note over Storage
-Здесь проводятся основные
-проверки на консистенотонсть 
-данных, выбрасываются 
-исколючния на невалидные 
-объекты, проверяется 
-существование объкетов в БД
-end note
-/ note over Repository
-Реализует общение с БД
-end note
-
--> Controller : REST запрос
-Controller -> Service : DTO и/или Значения
-
-Service -> Storage : Объект или Значение
-Storage -> Repository : Вызов соответсвующего метода
-Repository -> DB : Query
-DB -> Repository : Данные
-Repository -> Storage : Объект(ы)
-
-Storage -> Service : Объект(ы)
-Service -> Service : Обработка бизнес логикой
-Service -> Controller : DTO или ничего
-
-<- Controller : REST ответ
-
-@enduml
-```
+![sq_1.png](img%2Fsq_1.png)
