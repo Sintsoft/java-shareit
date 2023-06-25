@@ -20,12 +20,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> getUserItemsBookings(User booker);
 
     @Query(value = "select b.* from shareit.bookings b where b.item_id = ?1 " +
-            "and start_date < now()  order by b.start_date DESC LIMIT 1",
+            "and start_date < now() AND status = 'APPROVED' order by b.start_date DESC LIMIT 1",
             nativeQuery = true)
     List<Booking> getItemLastBooking(long itemId);
 
     @Query(value = "select b.* from shareit.bookings b where b.item_id = ?1 " +
-            "and start_date > now() order by b.start_date ASC LIMIT 1",
+            "and start_date > now() AND status NOT IN ('REJECTED', 'CANCELED') order by b.start_date ASC LIMIT 1",
             nativeQuery = true)
     List<Booking> getItemNextBooking(long itemId);
 }

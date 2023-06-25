@@ -5,7 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.model.BookingRequestStatus;
 import ru.practicum.shareit.booking.vault.BookingStorage;
+import ru.practicum.shareit.comment.dto.CommentMapper;
+import ru.practicum.shareit.comment.dto.NestedCommentDto;
+import ru.practicum.shareit.comment.dto.RequestCommentDto;
+import ru.practicum.shareit.comment.vault.CommentStorage;
 import ru.practicum.shareit.item.dto.RequestItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -35,6 +40,9 @@ public class ItemServiceWithDBRepo implements ItemService {
     @Autowired
     private final BookingStorage bookingStorage;
 
+    @Autowired
+    private final CommentStorage commentStorage;
+
     @Override
     public ResponseItemDto createItem(RequestItemDto dto, Long userId) {
         log.trace("Level: SERVICE. Call of createItem. Payload: " + dto);
@@ -46,7 +54,7 @@ public class ItemServiceWithDBRepo implements ItemService {
             newItem.setUser(userStorage.loadUser(userId));
 
             log.trace("User is valid. Saving item ...");
-            return ItemMapper.toDto(itemStorage.createItem(newItem), null, null);
+            return ItemMapper.toDto(itemStorage.createItem(newItem), null, null, List.of());
         } catch (NullPointerException ex) {
             log.info("Got null pointer exception.");
             throw new ShareItInvalidEntity("Invalid item");
@@ -76,7 +84,8 @@ public class ItemServiceWithDBRepo implements ItemService {
                     itemStorage.updateItem(
                         itemToUpd),
                         bookingStorage.loadItemLastBooking(itemToUpd),
-                        bookingStorage.loadItemNextBooking(itemToUpd));
+                        bookingStorage.loadItemNextBooking(itemToUpd),
+                        commentStorage.getItemComments(itemToUpd));
         } catch (NullPointerException ex) {
             log.info("Got null pointer exception.");
             throw new ShareItInvalidEntity("Invalid item");
@@ -94,10 +103,11 @@ public class ItemServiceWithDBRepo implements ItemService {
             return ItemMapper.toDto(
                     searchItem,
                     bookingStorage.loadItemLastBooking(searchItem),
-                    bookingStorage.loadItemNextBooking(searchItem));
+                    bookingStorage.loadItemNextBooking(searchItem),
+                    commentStorage.getItemComments(searchItem));
         }
         return ItemMapper.toDto(
-                searchItem, null, null);
+                searchItem, null, null, List.of());
     }
 
     @Override
@@ -108,7 +118,8 @@ public class ItemServiceWithDBRepo implements ItemService {
                 .map(
                         x -> ItemMapper.toDto(x,
                                 bookingStorage.loadItemLastBooking(x),
-                                bookingStorage.loadItemNextBooking(x))
+                                bookingStorage.loadItemNextBooking(x),
+                                commentStorage.getItemComments(x))
                 )
                 .collect(Collectors.toList());
     }
@@ -125,9 +136,27 @@ public class ItemServiceWithDBRepo implements ItemService {
                 .map(
                         x -> ItemMapper.toDto(x,
                                 bookingStorage.loadItemLastBooking(x),
-                                bookingStorage.loadItemNextBooking(x))
+                                bookingStorage.loadItemNextBooking(x),
+                                commentStorage.getItemComments(x))
                 )
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public NestedCommentDto postComment(RequestCommentDto commentDto, Long itemId, Long userId) {
+        User user = userStorage.loadUser(userId);
+        Item item = itemStorage.loadItem(itemId);
+        if (!bookingStorage.loadUserBookings(user, BookingRequestStatus.PAST)
+                .anyMatch(x -> x.getItem().getId() == itemId)
+            || commentDto.getText().isBlank()) {
+            throw new ShareItInvalidEntity("This user can't comment item");
+        }
+        return CommentMapper.toNested(
+                commentStorage.createComment(
+                        CommentMapper.fromDto(
+                                commentDto,
+                                item,
+                                user)));
     }
 
 }

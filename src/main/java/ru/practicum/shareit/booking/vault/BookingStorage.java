@@ -2,12 +2,15 @@ package ru.practicum.shareit.booking.vault;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingRequestStatus;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItEntityNotFound;
@@ -17,6 +20,8 @@ import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItSQLException
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
@@ -54,13 +59,17 @@ public class BookingStorage {
     }
 
     @Transactional
-    public List<Booking> loadUserBookings(User user) {
-        return repository.getUserBookings(user);
+    public Stream<Booking> loadUserBookings(User user, BookingRequestStatus status) {
+        return repository.getUserBookings(user)
+                .stream()
+                .filter(x -> filterBookings(x, status));
     }
 
     @Transactional
-    public List<Booking> loadUserItemsBookings(User user) {
-        return repository.getUserItemsBookings(user);
+    public Stream<Booking> loadUserItemsBookings(User user, BookingRequestStatus status) {
+        return repository.getUserItemsBookings(user)
+                .stream()
+                .filter(x -> filterBookings(x, status));
     }
 
     @Transactional
@@ -100,4 +109,22 @@ public class BookingStorage {
         }
     }
 
+    private boolean filterBookings(Booking booking, BookingRequestStatus status) {
+        switch (status) {
+            case ALL:
+                return true;
+            case PAST:
+                return booking.isPast() && booking.getStatus().equals(BookingStatus.APPROVED);
+            case FUTURE:
+                return  booking.isFuture()
+                        && List.of(BookingStatus.APPROVED, BookingStatus.WAITING).contains(booking.getStatus());
+            case CURRENT:
+                return booking.isCurrent() && booking.getStatus().equals(BookingStatus.APPROVED);
+            case WAITING:
+                return booking.getStatus().equals(BookingStatus.WAITING);
+            case REJECTED:
+                return booking.getStatus().equals(BookingStatus.REJECTED);
+            default: return false;
+        }
+    }
 }

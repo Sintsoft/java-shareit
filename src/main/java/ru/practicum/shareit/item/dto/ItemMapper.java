@@ -2,8 +2,14 @@ package ru.practicum.shareit.item.dto;
 
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.comment.dto.CommentMapper;
+import ru.practicum.shareit.comment.dto.NestedCommentDto;
+import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ItemMapper {
 
@@ -41,7 +47,7 @@ public class ItemMapper {
         );
     }
 
-    public static ResponseItemDto toDto(Item item, Booking last, Booking next) {
+    public static ResponseItemDto toDto(Item item, Booking last, Booking next, List<Comment> comments) {
         return new ResponseItemDto(
                 item.getId(),
                 item.getName(),
@@ -50,7 +56,8 @@ public class ItemMapper {
                 item.getUser() != null ? item.getUser().getId() : null,
                 item.getRequest() != null ? item.getRequest().getId() : null,
                 last != null ? BookingMapper.toNested(last) : null,
-                next != null ? BookingMapper.toNested(next) : null
+                next != null ? BookingMapper.toNested(next) : null,
+                comments.stream().map(CommentMapper::toNested).collect(Collectors.toList())
         );
     }
 

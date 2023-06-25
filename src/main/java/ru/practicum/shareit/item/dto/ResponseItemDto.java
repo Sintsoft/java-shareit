@@ -6,6 +6,10 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.booking.dto.NestedBookingDto;
+import ru.practicum.shareit.comment.dto.NestedCommentDto;
+import ru.practicum.shareit.comment.model.Comment;
+
+import java.util.List;
 
 
 @Data
@@ -36,4 +40,6 @@ public class ResponseItemDto {
 
     // @JsonInclude(JsonInclude.Include.NON_NULL)
     private NestedBookingDto nextBooking;
+
+    private List<NestedCommentDto> comments;
 }

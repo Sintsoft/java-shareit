@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.comment.dto.NestedCommentDto;
+import ru.practicum.shareit.comment.dto.RequestCommentDto;
 import ru.practicum.shareit.item.dto.RequestItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
 import ru.practicum.shareit.item.dto.ResponseSingleItemDto;
@@ -52,5 +54,12 @@ public class ItemController {
     @GetMapping("/search")
     List<ResponseItemDto> searchItems(@RequestParam(required = true, name = "text") String searchStr) {
         return service.searchItem(searchStr);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    NestedCommentDto postComment(@PathVariable Long itemId,
+                                 @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+                                 @Validated @RequestBody RequestCommentDto commentDto) {
+        return service.postComment(commentDto, itemId, userId);
     }
 }

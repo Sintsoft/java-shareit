@@ -99,20 +99,7 @@ public class BookingServiceWithDBRepo implements BookingService {
         try {
             BookingRequestStatus status = BookingRequestStatus.valueOf(stringStatus);
             return bookingStorage.loadUserBookings(
-                userStorage.loadUser(userId))
-                .stream()
-                .filter(x ->
-                        status.equals(BookingRequestStatus.ALL)
-                                || (status.equals(BookingRequestStatus.CURRENT) && x.isCurrent())
-                                || (status.equals(BookingRequestStatus.PAST)
-                                    && x.isPast())
-                                    && x.getStatus().equals(BookingStatus.APPROVED)
-                                || (status.equals(BookingRequestStatus.FUTURE) && x.isFuture())
-                                || (status.equals(BookingRequestStatus.REJECTED)
-                                    && x.getStatus().equals(BookingStatus.REJECTED))
-                                || (status.equals(BookingRequestStatus.WAITING)
-                                    && x.getStatus().equals(BookingStatus.WAITING))
-                )
+                userStorage.loadUser(userId), status)
                 .map(BookingMapper::toDto)
                 .collect(Collectors.toList());
         } catch (IllegalArgumentException ex) {
@@ -125,20 +112,7 @@ public class BookingServiceWithDBRepo implements BookingService {
         try {
             BookingRequestStatus status = BookingRequestStatus.valueOf(stringStatus);
             return bookingStorage.loadUserItemsBookings(
-                            userStorage.loadUser(userId))
-                    .stream()
-                    .filter(x ->
-                            status.equals(BookingRequestStatus.ALL)
-                                    || (status.equals(BookingRequestStatus.CURRENT) && x.isCurrent())
-                                    || (status.equals(BookingRequestStatus.PAST)
-                                    && x.isPast())
-                                    && x.getStatus().equals(BookingStatus.APPROVED)
-                                    || (status.equals(BookingRequestStatus.FUTURE) && x.isFuture())
-                                    || (status.equals(BookingRequestStatus.REJECTED)
-                                    && x.getStatus().equals(BookingStatus.REJECTED))
-                                    || (status.equals(BookingRequestStatus.WAITING)
-                                    && x.getStatus().equals(BookingStatus.WAITING))
-                    )
+                            userStorage.loadUser(userId), status)
                     .map(BookingMapper::toDto)
                     .collect(Collectors.toList());
         } catch (IllegalArgumentException ex) {

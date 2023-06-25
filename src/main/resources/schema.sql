@@ -1,4 +1,4 @@
-drop schema if exists shareit CASCADE;
+--drop schema if exists shareit CASCADE;
 
 create schema if not exists shareit;
 
@@ -42,5 +42,6 @@ CREATE TABLE IF NOT EXISTS shareit.item_comments (
   comment_text text,
   item_id BIGINT references shareit.items (id),
   author_id BIGINT references shareit.users (id),
+  created TIMESTAMP WITHOUT TIME zone,
   CONSTRAINT pk_comment PRIMARY KEY (id)
 );
