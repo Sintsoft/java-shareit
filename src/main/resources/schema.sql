@@ -1,4 +1,4 @@
---drop schema if exists shareit CASCADE;
+drop schema if exists shareit CASCADE;
 
 create schema if not exists shareit;
 
