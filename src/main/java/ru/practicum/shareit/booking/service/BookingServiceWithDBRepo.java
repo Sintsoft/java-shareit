@@ -19,9 +19,7 @@ import ru.practicum.shareit.user.vault.UserStorage;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInnerException;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
-import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItNotAllowedAction;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,7 +72,7 @@ public class BookingServiceWithDBRepo implements BookingService {
                     )
             ) {
                 approvedBooking.setStatus(BookingStatus.APPROVED);
-            } else if (!approved && !approvedBooking.getStatus().equals(BookingStatus.CANCELED)){
+            } else if (!approved && !approvedBooking.getStatus().equals(BookingStatus.CANCELED)) {
                 approvedBooking.setStatus(BookingStatus.REJECTED);
             } else {
                 throw new ShareItInvalidEntity("Invalid request");

@@ -44,7 +44,7 @@ public class UserController {
 
     @GetMapping
     public List<UserDto> getAllUsers() {
-        log.trace("Level: CONTROLLER. Call of deleteUser." );
+        log.trace("Level: CONTROLLER. Call of deleteUser.");
         return service.getAllUsers();
     }
 

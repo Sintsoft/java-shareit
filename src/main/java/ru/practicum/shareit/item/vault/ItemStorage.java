@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.vault;
 
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItSQLException;
-import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItValueAlreadyTaken;
 
 import javax.validation.constraints.Positive;
 import java.util.List;

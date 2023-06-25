@@ -9,7 +9,6 @@ import ru.practicum.shareit.comment.dto.NestedCommentDto;
 import ru.practicum.shareit.comment.dto.RequestCommentDto;
 import ru.practicum.shareit.item.dto.RequestItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
-import ru.practicum.shareit.item.dto.ResponseSingleItemDto;
 import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;

@@ -11,15 +11,15 @@ import ru.practicum.shareit.comment.dto.CommentMapper;
 import ru.practicum.shareit.comment.dto.NestedCommentDto;
 import ru.practicum.shareit.comment.dto.RequestCommentDto;
 import ru.practicum.shareit.comment.vault.CommentStorage;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.RequestItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.dto.ResponseSingleItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.vault.ItemStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.vault.UserStorage;
-import ru.practicum.shareit.utility.errorHandling.exceptions.*;
+import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
+import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItNotAllowedAction;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;

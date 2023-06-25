@@ -4,28 +4,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.vault.UserRepository;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.vault.UserStorage;
-import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
-import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItSQLException;
-import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItValueAlreadyTaken;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @Primary
 @Slf4j
 @RequiredArgsConstructor
-public class UserServiceWithDBRepo implements UserService{
+public class UserServiceWithDBRepo implements UserService {
 
     @Autowired
     private final UserStorage userStorage;
