@@ -39,8 +39,8 @@ public class Booking {
     private BookingStatus status;
 
     public boolean isCurrent() {
-        return this.start.isAfter(LocalDateTime.now())
-                && this.end.isBefore(LocalDateTime.now());
+        return this.start.isBefore(LocalDateTime.now())
+                && this.end.isAfter(LocalDateTime.now());
     }
 
     public boolean isPast() {

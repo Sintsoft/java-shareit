@@ -47,7 +47,7 @@ public class BookingServiceWithDBRepo implements BookingService {
                 throw new ShareItInvalidEntity("Can't book inavaliable item");
             }
             User booker = userStorage.loadUser(userId);
-            if (booker.getId() == bookedItem.getUser().getId()) {
+            if (booker.getId().equals(bookedItem.getUser().getId())) {
                 throw new ShareItEntityNotFound("Owner can't book own item");
             }
             return BookingMapper.toDto(
@@ -86,7 +86,7 @@ public class BookingServiceWithDBRepo implements BookingService {
     @Override
     public ResponseBookingDto getBooking(Long bookingId, Long userId) {
         Booking bookIng = bookingStorage.loadBooking(bookingId);
-        if (bookIng.getBooker().getId() != userId && bookIng.getItem().getUser().getId() != userId) {
+        if (!bookIng.getBooker().getId().equals(userId) && !bookIng.getItem().getUser().getId().equals(userId)) {
             throw new ShareItEntityNotFound("Сan't find this booking");
         }
         return BookingMapper.toDto(bookIng);

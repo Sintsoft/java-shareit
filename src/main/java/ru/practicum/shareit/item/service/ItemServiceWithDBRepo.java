@@ -72,7 +72,7 @@ public class ItemServiceWithDBRepo implements ItemService {
             Item itemToUpd = itemStorage.loadItem(itemId);
 
             log.trace("Item is vaild. Validating user... ");
-            if (itemToUpd.getUser().getId() != userId) {
+            if (!itemToUpd.getUser().getId().equals(userId)) {
                 log.info("Incorrect item owner id.");
                 throw new ShareItNotAllowedAction("Incorrect item owner id.");
             }
@@ -99,7 +99,7 @@ public class ItemServiceWithDBRepo implements ItemService {
     public ResponseItemDto getItem(Long itemId, Long userId) {
         log.trace("Level: SERVICE. Call of getItem. Payload: " + itemId);
         Item searchItem = itemStorage.loadItem(itemId);
-        if (searchItem.getUser().getId() == userId) {
+        if (searchItem.getUser().getId().equals(userId)) {
             return ItemMapper.toDto(
                     searchItem,
                     bookingStorage.loadItemLastBooking(searchItem),
@@ -107,7 +107,7 @@ public class ItemServiceWithDBRepo implements ItemService {
                     commentStorage.getItemComments(searchItem));
         }
         return ItemMapper.toDto(
-                searchItem, null, null, List.of());
+                searchItem, null, null, commentStorage.getItemComments(searchItem));
     }
 
     @Override
@@ -146,8 +146,8 @@ public class ItemServiceWithDBRepo implements ItemService {
     public NestedCommentDto postComment(RequestCommentDto commentDto, Long itemId, Long userId) {
         User user = userStorage.loadUser(userId);
         Item item = itemStorage.loadItem(itemId);
-        if (!bookingStorage.loadUserBookings(user, BookingRequestStatus.PAST)
-                .anyMatch(x -> x.getItem().getId() == itemId)
+        if (bookingStorage.loadUserBookings(user, BookingRequestStatus.PAST)
+                .noneMatch(x -> x.getItem().getId().equals(itemId))
             || commentDto.getText().isBlank()) {
             throw new ShareItInvalidEntity("This user can't comment item");
         }

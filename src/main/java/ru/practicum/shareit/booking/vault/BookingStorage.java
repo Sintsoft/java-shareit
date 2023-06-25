@@ -116,7 +116,7 @@ public class BookingStorage {
                 return  booking.isFuture()
                         && List.of(BookingStatus.APPROVED, BookingStatus.WAITING).contains(booking.getStatus());
             case CURRENT:
-                return booking.isCurrent() && booking.getStatus().equals(BookingStatus.APPROVED);
+                return booking.isCurrent() && !booking.getStatus().equals(BookingStatus.CANCELED);
             case WAITING:
                 return booking.getStatus().equals(BookingStatus.WAITING);
             case REJECTED:
