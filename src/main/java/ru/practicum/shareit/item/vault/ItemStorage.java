@@ -40,12 +40,11 @@ public class ItemStorage {
 
     public Item loadItem(@Positive Long itemId) {
         log.trace("Level: STORAGE. Call of loadItem. Payload: " + itemId);
-        Optional<Item> item = repository.findById(itemId);
-        if (item.isEmpty()) {
-            log.debug("No user with id = " + itemId);
-            throw new ShareItEntityNotFound("No user with id = " + itemId);
-        }
-        return item.get();
+        return repository.findById(itemId)
+                .orElseThrow(
+                        () -> {
+                            throw new ShareItEntityNotFound("No item with id = " + itemId);
+                        });
     }
 
     public List<Item> loadUserItems(User user) {

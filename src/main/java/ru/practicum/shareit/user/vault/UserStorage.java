@@ -47,11 +47,10 @@ public class UserStorage {
             log.debug("User id can not be null");
             throw new ShareItInvalidEntity("Set item owner in header");
         }
-        Optional<User> optionalUser = repository.findById(userId);
-        if (optionalUser.isEmpty()) {
-            throw new ShareItEntityNotFound("User with id = " + userId + " not found");
-        }
-        return optionalUser.get();
+        return repository.findById(userId)
+                .orElseThrow(() -> {
+                    throw new ShareItEntityNotFound("User with id = " + userId + " not found");
+                });
     }
 
     public List<User> loadAllUsers() {

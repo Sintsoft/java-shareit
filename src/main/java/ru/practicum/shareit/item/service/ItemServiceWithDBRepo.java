@@ -116,10 +116,10 @@ public class ItemServiceWithDBRepo implements ItemService {
         return itemStorage.loadUserItems(userStorage.loadUser(userId))
                 .stream()
                 .map(
-                        x -> ItemMapper.toDto(x,
-                                bookingStorage.loadItemLastBooking(x),
-                                bookingStorage.loadItemNextBooking(x),
-                                commentStorage.getItemComments(x))
+                        item -> ItemMapper.toDto(item,
+                                bookingStorage.loadItemLastBooking(item),
+                                bookingStorage.loadItemNextBooking(item),
+                                commentStorage.getItemComments(item))
                 )
                 .collect(Collectors.toList());
     }
@@ -132,12 +132,12 @@ public class ItemServiceWithDBRepo implements ItemService {
         }
         return itemStorage.searchForItems(searchString)
                 .stream()
-                .filter(i -> i.getAvailable() == true)
+                .filter(item -> item.getAvailable() == true)
                 .map(
-                        x -> ItemMapper.toDto(x,
-                                bookingStorage.loadItemLastBooking(x),
-                                bookingStorage.loadItemNextBooking(x),
-                                commentStorage.getItemComments(x))
+                        item -> ItemMapper.toDto(item,
+                                bookingStorage.loadItemLastBooking(item),
+                                bookingStorage.loadItemNextBooking(item),
+                                commentStorage.getItemComments(item))
                 )
                 .collect(Collectors.toList());
     }
@@ -147,7 +147,7 @@ public class ItemServiceWithDBRepo implements ItemService {
         User user = userStorage.loadUser(userId);
         Item item = itemStorage.loadItem(itemId);
         if (bookingStorage.loadUserBookings(user, BookingRequestStatus.PAST)
-                .noneMatch(x -> x.getItem().getId().equals(itemId))
+                .noneMatch(matchItem -> matchItem.getItem().getId().equals(itemId))
             || commentDto.getText().isBlank()) {
             throw new ShareItInvalidEntity("This user can't comment item");
         }

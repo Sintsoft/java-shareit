@@ -28,6 +28,7 @@ public class BookingStorage {
     @Autowired
     private final BookingRepository repository;
 
+    @Transactional
     public Booking createBooking(Booking booking) {
         if (booking.getId() != null) {
             throw new ShareItInvalidEntity("Invaild booking for creation");
@@ -35,6 +36,7 @@ public class BookingStorage {
         return saveToRepo(booking);
     }
 
+    @Transactional
     public Booking updateBooking(Booking booking) {
         if (booking.getId() == null) {
             throw new ShareItInvalidEntity("Invaild booking for creation");
@@ -48,25 +50,23 @@ public class BookingStorage {
             log.debug("User id can not be null");
             throw new ShareItInvalidEntity("Set item owner in header");
         }
-        Optional<Booking> optionalBooking = repository.findById(bookingId);
-        if (optionalBooking.isEmpty()) {
+        return repository.findById(bookingId).orElseThrow(() -> {
             throw new ShareItEntityNotFound("User with id = " + bookingId + " not found");
-        }
-        return optionalBooking.get();
+        });
     }
 
     @Transactional
     public Stream<Booking> loadUserBookings(User user, BookingRequestStatus status) {
         return repository.getUserBookings(user)
                 .stream()
-                .filter(x -> filterBookings(x, status));
+                .filter(booking -> filterBookings(booking, status));
     }
 
     @Transactional
     public Stream<Booking> loadUserItemsBookings(User user, BookingRequestStatus status) {
         return repository.getUserItemsBookings(user)
                 .stream()
-                .filter(x -> filterBookings(x, status));
+                .filter(booking -> filterBookings(booking, status));
     }
 
     @Transactional

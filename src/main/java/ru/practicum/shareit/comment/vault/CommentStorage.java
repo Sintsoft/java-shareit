@@ -33,8 +33,7 @@ public class CommentStorage {
     @Transactional
     public List<Comment> getItemComments(Item item) {
         try {
-            List<Comment> comments = repository.getItemComments(item);
-            return comments;
+            return repository.getItemComments(item);
         } catch (DataIntegrityViolationException ex) {
             log.debug("We got SQL error");
             throw new ShareItSQLException("Something bad happened, We are working to fix it.");
