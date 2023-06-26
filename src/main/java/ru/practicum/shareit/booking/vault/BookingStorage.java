@@ -17,7 +17,6 @@ import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItSQLException
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 @Slf4j

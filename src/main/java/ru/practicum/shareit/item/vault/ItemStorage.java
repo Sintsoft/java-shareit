@@ -14,7 +14,6 @@ import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItSQLException
 
 import javax.validation.constraints.Positive;
 import java.util.List;
-import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
