@@ -1,5 +1,3 @@
-drop schema if exists shareit CASCADE;
-
 create schema if not exists shareit;
 
 CREATE TABLE IF NOT EXISTS shareit.users (
