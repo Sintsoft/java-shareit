@@ -1,39 +1,43 @@
 package ru.practicum.shareit.item.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.utility.Entity;
+import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 
-import javax.validation.ValidationException;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-/**
- * TODO Sprint add-controllers.
- */
+@Entity
 @Data
-public class Item extends Entity {
+@AllArgsConstructor
+@RequiredArgsConstructor
+@Table(name = "items", schema = "shareit")
+public class Item {
 
-    @NotNull
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @Column(name = "item_name")
+    @NotBlank
     private String name;
 
+    @Column(name = "description")
+    @NotNull
     private String description;
 
+    @Column(name = "available")
+    @NotNull
     private Boolean available;
 
-    private User owner;
-
+    @ManyToOne
+    @JoinColumn(name = "request_id")
     private ItemRequest request;
-
-    public Item(Integer id, String name, String description, Boolean available, User owner, ItemRequest request) {
-        super(id);
-        if (name == null) {
-            throw new ValidationException("Item name can not be null");
-        }
-        this.name = name;
-        this.description = description;
-        this.available = available;
-        this.owner = owner;
-        this.request = request;
-    }
 }

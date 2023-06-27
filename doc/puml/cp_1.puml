@@ -1,0 +1,62 @@
+@startuml
+
+left to right direction
+
+skinparam Pagging 100
+package "Слой контроллеров" {
+    interface "Controller" as ct1
+    interface "Controller" as ct2
+    interface "Controller" as ct3
+    interface "Controller" as ct4
+}
+
+rectangle "Внутренний слой" {
+    component "Service" as sv1
+    component "Service" as sv2
+    component "Service" as sv3
+    component "Service" as sv4
+
+    component "Storage" as st1
+    component "Storage" as st2
+    component "Storage" as st3
+    component "Storage" as st4
+}
+
+database "Репозитории" {
+    interface "Repository" as rp1
+    interface "Repository" as rp2
+    interface "Repository" as rp3
+    interface "Repository" as rp4
+}
+
+ct1 -- sv1
+ct2 -- sv2
+ct3 -- sv3
+ct4 -- sv4
+
+sv1 -[#Red]- st1
+sv1 -[#Red]- st2
+sv1 -[#Red]- st3
+sv1 -[#Red]- st4
+
+sv2 -[#Green]- st1
+sv2 -[#Green]- st2
+sv2 -[#Green]- st3
+sv2 -[#Green]- st4
+
+sv3 -[#Blue]- st1
+sv3 -[#Blue]- st2
+sv3 -[#Blue]- st3
+sv3 -[#Blue]- st4
+
+sv4 -[#Orange]- st1
+sv4 -[#Orange]- st2
+sv4 -[#Orange]- st3
+sv4 -[#Orange]- st4
+
+st1 -- rp1
+st2 -- rp2
+st3 -- rp3
+st4 -- rp4
+
+@enduml

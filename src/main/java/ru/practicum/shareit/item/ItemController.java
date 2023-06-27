@@ -3,60 +3,62 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.comment.dto.NestedCommentDto;
+import ru.practicum.shareit.comment.dto.RequestCommentDto;
+import ru.practicum.shareit.item.dto.RequestItemDto;
+import ru.practicum.shareit.item.dto.ResponseItemDto;
+import ru.practicum.shareit.item.service.ItemService;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping("/items")
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class ItemController {
 
     @Autowired
     private final ItemService service;
 
     @PostMapping
-    public ItemDto postItem(
-            @RequestBody ItemDto itemDto,
-            @RequestHeader(value = "X-Sharer-User-Id") @Positive Integer userId) {
-        log.debug("Call POST /items. Header user-id = " + userId);
-        itemDto.setOwner(userId);
-        itemDto = service.addItem(itemDto);
-        return itemDto;
+    ResponseItemDto postItem(@Validated @RequestBody RequestItemDto itemDto,
+                             @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+        log.trace("Level: CONTROLLER. Call of postItem. Payload: " + itemDto + " " + userId);
+        return service.createItem(itemDto, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto patchItem(
-            @RequestBody ItemDto itemDto,
-            @RequestHeader(value = "X-Sharer-User-Id") @Positive Integer userId,
-            @PathVariable Integer itemId) {
-            itemDto.setOwner(userId);
-            itemDto = service.updateItem(itemId, itemDto);
-        return itemDto;
+    ResponseItemDto patchItem(@Validated @RequestBody RequestItemDto itemDto,
+                              @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+                              @PathVariable Long itemId) {
+        log.trace("Level: CONTROLLER. Call of patchItem. Payload: " + itemDto + " " + itemId + " " + userId);
+        return service.updateItem(itemDto, itemId, userId);
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@PathVariable @Positive Integer itemId) {
-        return service.getItem(itemId);
+    ResponseItemDto getItem(@PathVariable Long itemId,
+                            @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+        log.trace("Level: CONTROLLER. Call of postItem. Payload: " + itemId);
+        return service.getItem(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getItems(@RequestHeader(value = "X-Sharer-User-Id", required = false) @Positive Integer userId) {
-        if (userId == null) return service.getAllItems();
+    List<ResponseItemDto> getUserItem(@RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+        log.trace("Level: CONTROLLER. Call of postItem. Payload: " + userId);
         return service.getUserItems(userId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItem(
-            @RequestParam @NotNull String text) {
-        return service.searchItem(text);
+    List<ResponseItemDto> searchItems(@RequestParam(required = true, name = "text") String searchStr) {
+        return service.searchItem(searchStr);
     }
 
+    @PostMapping("/{itemId}/comment")
+    NestedCommentDto postComment(@PathVariable Long itemId,
+                                 @RequestHeader(value = "X-Sharer-User-Id") Long userId,
+                                 @Validated @RequestBody RequestCommentDto commentDto) {
+        return service.postComment(commentDto, itemId, userId);
+    }
 }
