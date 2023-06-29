@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.utility.errorHandling.exceptions.*;
 
+import java.util.Arrays;
+
 
 @Slf4j
 @RestControllerAdvice
@@ -52,5 +54,12 @@ public class ErrorHandler {
     public ErrorResponse innerException(ShareItInnerException ex) {
         log.info("Level: ERROR HANDLER. Catched exception: " + ex.getClass() + ". Message: " + ex.getMessage());
         return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse otherExceprions(Throwable ex) {
+        log.info("Level: ERROR HANDLER. Catched exception: " + ex.getClass() + ". Message: " + ex.getMessage());
+        return new ErrorResponse(ex.getClass() + "        " + Arrays.toString(ex.getStackTrace()));
     }
 }

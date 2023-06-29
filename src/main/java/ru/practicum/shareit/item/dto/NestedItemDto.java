@@ -12,4 +12,12 @@ public class NestedItemDto {
     private Long id;
 
     private String name;
+
+    private Long userId;
+
+    private String description;
+
+    private Boolean available;
+
+    private Long requestId;
 }
