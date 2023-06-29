@@ -146,7 +146,7 @@ public class ItemServiceWithDBRepo implements ItemService {
     public NestedCommentDto postComment(RequestCommentDto commentDto, Long itemId, Long userId) {
         User user = userStorage.loadUser(userId);
         Item item = itemStorage.loadItem(itemId);
-        if (bookingStorage.loadUserBookings(user, BookingRequestStatus.PAST)
+        if (bookingStorage.loadUserBookings(user, BookingRequestStatus.PAST, 0, Integer.MAX_VALUE)
                 .noneMatch(matchItem -> matchItem.getItem().getId().equals(itemId))
             || commentDto.getText().isBlank()) {
             throw new ShareItInvalidEntity("This user can't comment item");

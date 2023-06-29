@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -55,15 +56,21 @@ public class BookingStorage {
     }
 
     @Transactional
-    public Stream<Booking> loadUserBookings(User user, BookingRequestStatus status) {
-        return repository.getUserBookings(user)
+    public Stream<Booking> loadUserBookings(User user, BookingRequestStatus status, int from, int size) {
+        if (from < 0 || size <= 0) {
+            throw new ShareItInvalidEntity("Bad request params");
+        }
+        return repository.getUserBookings(user, PageRequest.of(from, size))
                 .stream()
                 .filter(booking -> filterBookings(booking, status));
     }
 
     @Transactional
-    public Stream<Booking> loadUserItemsBookings(User user, BookingRequestStatus status) {
-        return repository.getUserItemsBookings(user)
+    public Stream<Booking> loadUserItemsBookings(User user, BookingRequestStatus status, int from, int size) {
+        if (from < 0 || size <= 0) {
+            throw new ShareItInvalidEntity("Bad request params");
+        }
+        return repository.getUserItemsBookings(user, PageRequest.of(from, size))
                 .stream()
                 .filter(booking -> filterBookings(booking, status));
     }

@@ -93,11 +93,11 @@ public class BookingServiceWithDBRepo implements BookingService {
     }
 
     @Override
-    public List<ResponseBookingDto> getUserBookings(Long userId, String stringStatus) {
+    public List<ResponseBookingDto> getUserBookings(Long userId, String stringStatus, int from, int size) {
         try {
             BookingRequestStatus status = BookingRequestStatus.valueOf(stringStatus);
             return bookingStorage.loadUserBookings(
-                userStorage.loadUser(userId), status)
+                userStorage.loadUser(userId), status, from, size)
                 .map(BookingMapper::toDto)
                 .collect(Collectors.toList());
         } catch (IllegalArgumentException ex) {
@@ -106,11 +106,11 @@ public class BookingServiceWithDBRepo implements BookingService {
     }
 
     @Override
-    public List<ResponseBookingDto> getUserItemsBookings(Long userId, String stringStatus) {
+    public List<ResponseBookingDto> getUserItemsBookings(Long userId, String stringStatus, int from, int size) {
         try {
             BookingRequestStatus status = BookingRequestStatus.valueOf(stringStatus);
             return bookingStorage.loadUserItemsBookings(
-                            userStorage.loadUser(userId), status)
+                            userStorage.loadUser(userId), status, from, size)
                     .map(BookingMapper::toDto)
                     .collect(Collectors.toList());
         } catch (IllegalArgumentException ex) {
