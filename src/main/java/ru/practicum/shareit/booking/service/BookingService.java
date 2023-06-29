@@ -18,5 +18,5 @@ public interface BookingService {
 
     List<ResponseBookingDto> getUserBookings(Long userId, String status, int from, int size);
 
-    public List<ResponseBookingDto> getUserItemsBookings(Long userId, String status, int from, int size);
+    List<ResponseBookingDto> getUserItemsBookings(Long userId, String status, int from, int size);
 }

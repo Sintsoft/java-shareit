@@ -76,7 +76,7 @@ public class ItemServiceWithDBRepo implements ItemService {
                 log.info("Incorrect item owner id.");
                 throw new ShareItNotAllowedAction("Incorrect item owner id.");
             }
-            User owner = userStorage.loadUser(userId); // Проверим консистентность данных
+            userStorage.loadUser(userId); // Проверим консистентность данных
 
             log.trace("User is valid. Saving item ...");
             itemToUpd = ItemMapper.updateFromDto(itemToUpd, dto);
@@ -132,7 +132,7 @@ public class ItemServiceWithDBRepo implements ItemService {
         }
         return itemStorage.searchForItems(searchString)
                 .stream()
-                .filter(item -> item.getAvailable() == true)
+                .filter(item -> item.getAvailable())
                 .map(
                         item -> ItemMapper.toDto(item,
                                 bookingStorage.loadItemLastBooking(item),
