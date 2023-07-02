@@ -5,6 +5,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.comment.dto.CommentMapper;
 import ru.practicum.shareit.comment.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
 
 import java.util.List;
@@ -57,24 +58,18 @@ public class ItemMapper {
                 last != null ? BookingMapper.toNested(last) : null,
                 next != null ? BookingMapper.toNested(next) : null,
                 comments.stream().map(CommentMapper::toNested).collect(Collectors.toList())
-        );
-    }
 
-    public static ResponseSingleItemDto toDtoForSinle(Item item, Booking last, Booking next) {
-        return new ResponseSingleItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getUser() != null ? item.getUser().getId() : null,
-                item.getRequest() != null ? item.getRequest().getId() : null
         );
     }
 
     public static NestedItemDto toNestedDto(Item item) {
         return new NestedItemDto(
                 item.getId(),
-                item.getName()
+                item.getName(),
+                item.getUser() != null ? item.getUser().getId() : null,
+                item.getDescription(),
+                item.getAvailable(),
+                item.getRequest() != null ? item.getRequest().getId() : null
         );
     }
 }

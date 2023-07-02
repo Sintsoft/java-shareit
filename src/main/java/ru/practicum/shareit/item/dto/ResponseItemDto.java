@@ -31,8 +31,8 @@ public class ResponseItemDto {
     @NonNull
     private Long owner;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Long request;
+    // @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Long requestId;
 
     // @JsonInclude(JsonInclude.Include.NON_NULL)
     private NestedBookingDto lastBooking;

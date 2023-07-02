@@ -16,6 +16,8 @@ import ru.practicum.shareit.item.dto.RequestItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.vault.ItemStorage;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.vault.ItemRequestStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.vault.UserStorage;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
@@ -43,17 +45,27 @@ public class ItemServiceWithDBRepo implements ItemService {
     @Autowired
     private final CommentStorage commentStorage;
 
+    @Autowired
+    private final ItemRequestStorage itemRequestStorage;
+
     @Override
     public ResponseItemDto createItem(RequestItemDto dto, Long userId) {
         log.trace("Level: SERVICE. Call of createItem. Payload: " + dto);
         try {
             log.trace("Parsing item");
             Item newItem = ItemMapper.fromDto(dto);
+            if (dto.getRequestId() != null) {
+                log.trace("Checking request...");
+                newItem.setRequest(itemRequestStorage.loadRequest(dto.getRequestId()));
+            }
 
             log.trace("Item is vaild. Validating user... ");
             newItem.setUser(userStorage.loadUser(userId));
 
-            log.trace("User is valid. Saving item ...");
+            log.trace("User is valid.");
+
+
+            log.trace("Saving item ...");
             return ItemMapper.toDto(itemStorage.createItem(newItem), null, null, List.of());
         } catch (NullPointerException ex) {
             log.info("Got null pointer exception.");

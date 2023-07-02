@@ -7,6 +7,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
@@ -52,6 +53,10 @@ public class ItemStorage {
 
     public List<Item> searchForItems(String searchString) {
         return repository.findByNameOrDescriptionContainingIgnoreCase(searchString, searchString);
+    }
+
+    public List<Item> loadRequestItems(ItemRequest request) {
+        return repository.getRequestItems(request);
     }
 
     private Item saveToRepo(Item item) {
