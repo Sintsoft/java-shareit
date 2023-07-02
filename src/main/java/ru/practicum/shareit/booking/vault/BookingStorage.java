@@ -60,9 +60,10 @@ public class BookingStorage {
         if (from < 0 || size <= 0) {
             throw new ShareItInvalidEntity("Bad request params");
         }
-        return repository.getUserBookings(user, PageRequest.of(from, size))
+        Stream<Booking> bookings = repository.getUserBookings(user.getId(), from, size)
                 .stream()
                 .filter(booking -> filterBookings(booking, status));
+        return bookings;
     }
 
     @Transactional

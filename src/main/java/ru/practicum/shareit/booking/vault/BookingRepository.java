@@ -12,8 +12,11 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    @Query("select b from Booking b where b.booker = ?1 order by b.start DESC")
-    List<Booking> getUserBookings(User booker, Pageable pageable);
+    //@Query("select b from Booking b where b.booker = ?1 order by b.start DESC")
+    @Query(value = "select b.* from shareit.bookings b where b.booker_id = ?1 order by b.start_date DESC " +
+            "LIMIT ?3 OFFSET ?2",
+            nativeQuery = true)
+    List<Booking> getUserBookings(Long bookerId, int from, int size);
 
     @Query("select b from Booking b where b.item.user = ?1 order by b.start DESC")
     List<Booking> getUserItemsBookings(User booker, Pageable pageable);
