@@ -24,9 +24,9 @@ public class BookingModelTests {
         return new Booking(
                 null,
                 new Item(
-                        1l,
+                        1L,
                         new User(
-                                1l,
+                                1L,
                                 "name",
                                 "mail@email.ru"
                         ),
@@ -38,7 +38,7 @@ public class BookingModelTests {
                 LocalDateTime.now(),
                 LocalDateTime.now().plusHours(1),
                 new User(
-                        2l,
+                        2L,
                         "name2",
                         "mail2@email.ru"
                 ),
@@ -65,16 +65,16 @@ public class BookingModelTests {
     @Test
     void mapDtoToBookingTest() {
         RequestBookingDto testDTO = new RequestBookingDto(
-                1l,
+                1L,
                 LocalDateTime.now(),
                 LocalDateTime.now().plusHours(1)
         );
         Booking testBooking = BookingMapper.fromDto(
                 testDTO,
                 new Item(
-                        1l,
+                        1L,
                         new User(
-                                1l,
+                                1L,
                                 "name",
                                 "mail@email.ru"
                         ),
@@ -84,7 +84,7 @@ public class BookingModelTests {
                         null
                 ),
                 new User(
-                        2l,
+                        2L,
                         "name2",
                         "mail2@email.ru"
                 ));

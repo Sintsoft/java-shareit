@@ -62,7 +62,7 @@ public class BookingServiceWithDBRepo implements BookingService {
     public ResponseBookingDto approveBooking(long bookingId, boolean approved, long userId) {
         try {
             Booking approvedBooking = bookingStorage.loadBooking(bookingId);
-            if (itemStorage.loadItem(approvedBooking.getItem().getId()).getUser().getId() != userId) {
+            if (approvedBooking.getItem().getUser().getId() != userId) {
                 throw new ShareItEntityNotFound("This user can't approve this booking");
             }
             if (approved &&
