@@ -109,8 +109,8 @@ public class BookingServiceTests {
         when(mockBookingRepo.getUserItemsBookings(owner, PageRequest.of(0, 10)))
                 .thenReturn(List.of(ownerBooking, anotherOwnerBooking));
 
-        when(mockBookingRepo.getItemLastBooking(1l)).thenReturn(List.of(ownerBooking));
-        when(mockBookingRepo.getItemNextBooking(1l)).thenReturn(List.of(anotherOwnerBooking));
+        when(mockBookingRepo.getItemLastBooking(1L)).thenReturn(List.of(ownerBooking));
+        when(mockBookingRepo.getItemNextBooking(1L)).thenReturn(List.of(anotherOwnerBooking));
 
     }
 
