@@ -1,5 +1,7 @@
 package ru.practicum.shareit;
 
+import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
@@ -38,6 +40,23 @@ public abstract class TestDataGenerator {
                 "request" + id,
                 LocalDateTime.now(),
                 generateTestUser(userId)
+        );
+    }
+
+//    Booking generation block
+    public static Booking generateItemBooking(
+            long id,
+            long itemId,
+            long ownerid,
+            long bookerId) {
+        int offset = (int) id;
+        return new Booking(
+                id,
+                generateTestItem(itemId, ownerid),
+                LocalDateTime.now().plusHours(offset),
+                LocalDateTime.now().plusHours(offset + 1),
+                generateTestUser(bookerId),
+                BookingStatus.WAITING
         );
     }
 }
