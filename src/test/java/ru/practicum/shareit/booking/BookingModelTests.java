@@ -35,7 +35,7 @@ public class BookingModelTests {
                         true,
                         null
                 ),
-                LocalDateTime.now(),
+                LocalDateTime.now().minusHours(1),
                 LocalDateTime.now().plusHours(1),
                 new User(
                         2L,
@@ -50,6 +50,9 @@ public class BookingModelTests {
     void createBookingTest() {
         Booking testBooking = getValidTestBooking();
         assertEquals(0, validator.validate(testBooking).size());
+        assertFalse(testBooking.isPast());
+        assertFalse(testBooking.isFuture());
+        assertTrue(testBooking.isCurrent());
     }
 
     @Test
