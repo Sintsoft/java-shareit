@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.practicum.shareit.utility.errorHandling.exceptions.*;
 
+import static com.sun.tools.sjavac.Util.getStackTrace;
+
 
 @Slf4j
 @RestControllerAdvice
@@ -58,6 +60,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse otherExceprions(Throwable ex) {
         log.info("Level: ERROR HANDLER. Catched exception: " + ex.getClass() + ". Message: " + ex.getMessage());
-        return new ErrorResponse(ex.getClass() + "        " + ex.getMessage() + "        " + ex.getStackTrace());
+        return new ErrorResponse(ex.getClass() + "        " + ex.getMessage() + "        " + getStackTrace(ex));
     }
 }
