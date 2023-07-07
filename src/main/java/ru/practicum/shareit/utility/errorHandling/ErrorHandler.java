@@ -60,6 +60,6 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse otherExceprions(Throwable ex) {
         log.info("Level: ERROR HANDLER. Catched exception: " + ex.getClass() + ". Message: " + ex.getMessage());
-        return new ErrorResponse(ex.getClass() + "        " + ex.getMessage() + "        " + Arrays.toString(ex.getStackTrace()));
+        return new ErrorResponse(ex.getClass() + "        " + Arrays.toString(ex.getStackTrace()));
     }
 }
