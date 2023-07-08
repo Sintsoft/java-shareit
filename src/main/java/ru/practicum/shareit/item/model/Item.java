@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.item.dto.RequestItemDTO;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
@@ -40,5 +41,15 @@ public class Item {
     @ManyToOne
     @JoinColumn(name = "request_id")
     private ItemRequest request;
+
+    public Item updateFromDto(RequestItemDTO dto) {
+        if (dto.getName() != null)
+            this.name = dto.getName();
+        if (dto.getDescription() != null)
+            this.description = dto.getDescription();
+        if (dto.getAvailable() != null)
+            this.available = dto.getAvailable();
+        return this;
+    }
 
 }

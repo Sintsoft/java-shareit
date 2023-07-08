@@ -1,10 +1,13 @@
 package ru.practicum.shareit;
 
+import ru.practicum.shareit.item.dto.RequestItemDTO;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dto.RequestUserDTO;
 import ru.practicum.shareit.user.dto.ResponseUserDTO;
 import ru.practicum.shareit.user.model.User;
+
+import java.time.LocalDateTime;
 
 public abstract class TestDataGenerator {
 
@@ -50,13 +53,27 @@ public abstract class TestDataGenerator {
         );
     }
 
+    public static RequestItemDTO generateTestRequestItemDTO(long id, Long requestId) {
+        return new RequestItemDTO(
+                "item" + id,
+                "item" + id + " description",
+                true,
+                requestId
+        );
+    }
+
 
     /*
     * Item request data generation block
     */
 
     public static ItemRequest generateTestItemRequest(long id, long creatorId) {
-        return new ItemRequest();
+        return new ItemRequest(
+                id,
+                "request" + id + " description",
+                LocalDateTime.now(),
+                generateTestUser(creatorId)
+        );
     }
 
 }
