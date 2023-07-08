@@ -8,7 +8,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.dao.DataIntegrityViolationException;
 import ru.practicum.shareit.TestDataGenerator;
 import ru.practicum.shareit.user.dto.RequestUserDTO;
-import ru.practicum.shareit.user.dto.ResponseUserDto;
+import ru.practicum.shareit.user.dto.ResponseUserDTO;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.user.vault.UserRepository;
@@ -78,7 +78,7 @@ public class UserServiceTests {
 
     @Test
     void createNormalUserTest() {
-        ResponseUserDto testDto = testService.createUser(TestDataGenerator.generateTestRequestUserDTO(1L));
+        ResponseUserDTO testDto = testService.createUser(TestDataGenerator.generateTestRequestUserDTO(1L));
 
         assertEquals(1L, testDto.getId());
         assertEquals("user1", testDto.getName());
@@ -109,7 +109,7 @@ public class UserServiceTests {
     @Test
     void updateUserTest() {
         testService.createUser(TestDataGenerator.generateTestRequestUserDTO(1L));
-        ResponseUserDto testDto = testService.updateUser(
+        ResponseUserDTO testDto = testService.updateUser(
                 new RequestUserDTO("updateuser1", "user1@email.com"), 1L);
 
         assertEquals(1L, testDto.getId());
@@ -128,7 +128,7 @@ public class UserServiceTests {
     @Test
     void findUserByIdTest() {
         testService.createUser(TestDataGenerator.generateTestRequestUserDTO(1L));
-        ResponseUserDto testDto = testService.findUserById(1L);
+        ResponseUserDTO testDto = testService.findUserById(1L);
 
         assertEquals(1L, testDto.getId());
         assertEquals("user1", testDto.getName());
@@ -150,7 +150,7 @@ public class UserServiceTests {
         }
 
         assertEquals(10, testService.findAllUsers(0, 10).size());
-        for (ResponseUserDto dto : testService.findAllUsers(0, 10)
+        for (ResponseUserDTO dto : testService.findAllUsers(0, 10)
              ) {
             assertNotNull(dto.getId());
         }

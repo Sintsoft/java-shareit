@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.TestDataGenerator;
 import ru.practicum.shareit.user.dto.RequestUserDTO;
-import ru.practicum.shareit.user.dto.ResponseUserDto;
+import ru.practicum.shareit.user.dto.ResponseUserDTO;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.utility.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.exceptions.ShareItIvanlidEntity;
@@ -53,7 +53,7 @@ public class UserControllerTests {
         when(mockedUserService.createUser(new RequestUserDTO(null, null)))
                 .thenThrow(new ShareItIvanlidEntity("Invalid user"));
         when(mockedUserService.updateUser(new RequestUserDTO("updateuser1", "user1@email.com"), 1L))
-                .thenReturn(new ResponseUserDto(1L, "updateuser1", "user1@email.com"));
+                .thenReturn(new ResponseUserDTO(1L, "updateuser1", "user1@email.com"));
         when(mockedUserService.updateUser(new RequestUserDTO(null, "user1@email.com"), 2L))
                 .thenThrow(new ShareItUniqueValueCollision("This email, already taken"));
         when(mockedUserService.findUserById(100L))

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.RequestUserDTO;
-import ru.practicum.shareit.user.dto.ResponseUserDto;
+import ru.practicum.shareit.user.dto.ResponseUserDTO;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.util.List;
@@ -21,24 +21,24 @@ public class UserController {
     private final UserService service;
 
     @PostMapping
-    public ResponseUserDto postUser(@RequestBody RequestUserDTO dto) {
+    public ResponseUserDTO postUser(@RequestBody RequestUserDTO dto) {
         return service.createUser(dto);
     }
 
 
     @PatchMapping("/{userId}")
-    public ResponseUserDto patchUser(@RequestBody RequestUserDTO dto,
-                                    @PathVariable Long userId) {
+    public ResponseUserDTO patchUser(@RequestBody RequestUserDTO dto,
+                                     @PathVariable Long userId) {
         return service.updateUser(dto, userId);
     }
 
     @GetMapping("/{userId}")
-    public ResponseUserDto getUser(@PathVariable Long userId) {
+    public ResponseUserDTO getUser(@PathVariable Long userId) {
         return service.findUserById(userId);
     }
 
     @GetMapping
-    public List<ResponseUserDto> getUsers(@RequestParam(defaultValue = "0") int from,
+    public List<ResponseUserDTO> getUsers(@RequestParam(defaultValue = "0") int from,
                                           @RequestParam(defaultValue = "10") int size) {
         return service.findAllUsers(from, size);
     }

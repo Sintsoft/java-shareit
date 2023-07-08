@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
-public class ResponseUserDto {
+public class ResponseUserDTO {
 
     @NotNull
     private Long id;

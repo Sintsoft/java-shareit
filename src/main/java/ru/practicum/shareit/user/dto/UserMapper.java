@@ -13,8 +13,8 @@ public abstract class UserMapper {
         );
     }
 
-    public static ResponseUserDto toDto(User user) {
-        return new ResponseUserDto(
+    public static ResponseUserDTO toDto(User user) {
+        return new ResponseUserDTO(
                 user.getId(),
                 user.getName(),
                 user.getEmail()

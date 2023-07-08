@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.user.dto.RequestUserDTO;
-import ru.practicum.shareit.user.dto.ResponseUserDto;
+import ru.practicum.shareit.user.dto.ResponseUserDTO;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.vault.UserStorage;
 
@@ -23,7 +23,7 @@ public class UserServiceOnStorageImplemetation implements UserService {
     private final UserStorage userStorage;
 
     @Override
-    public ResponseUserDto createUser(RequestUserDTO inputDTO) {
+    public ResponseUserDTO createUser(RequestUserDTO inputDTO) {
         log.trace("LEVEL: Service. METHOD: createUser. INPUT: " + inputDTO);
         return UserMapper.toDto(
                 userStorage.createUser(
@@ -31,7 +31,7 @@ public class UserServiceOnStorageImplemetation implements UserService {
     }
 
     @Override
-    public ResponseUserDto updateUser(RequestUserDTO inputDTO, Long userId) {
+    public ResponseUserDTO updateUser(RequestUserDTO inputDTO, Long userId) {
         return UserMapper.toDto(
                 userStorage.updateUser(
                         UserMapper.updateFromDto(
@@ -39,12 +39,12 @@ public class UserServiceOnStorageImplemetation implements UserService {
     }
 
     @Override
-    public ResponseUserDto findUserById(Long userId) {
+    public ResponseUserDTO findUserById(Long userId) {
         return UserMapper.toDto(userStorage.readUserById(userId));
     }
 
     @Override
-    public List<ResponseUserDto> findAllUsers(int from, int size) {
+    public List<ResponseUserDTO> findAllUsers(int from, int size) {
         return userStorage.readManyUsers(from, size).stream().map(UserMapper::toDto).collect(Collectors.toList());
     }
 
