@@ -101,7 +101,9 @@ public class BookingStorage {
     @Transactional
     private Booking saveToRepo(Booking booking) {
         try {
-            if (booking.getStart().isAfter(booking.getEnd())
+            if (
+                    booking.getStart() == null || booking.getEnd() == null
+                    || booking.getStart().isAfter(booking.getEnd())
                     || booking.getStart().isEqual(booking.getEnd())
                     || booking.getStart().isBefore(LocalDateTime.now())) {
                 throw new ShareItInvalidEntity("Set coorrect time");
