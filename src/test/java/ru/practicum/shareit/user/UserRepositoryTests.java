@@ -7,17 +7,21 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.shareit.TestDataGenerator;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.vault.UserRepository;
 import ru.practicum.shareit.utility.configuration.PersistenceConfig;
 import ru.practicum.shareit.utility.exceptions.ShareItEntityNotFound;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 @DataJpaTest
-@Import(PersistenceConfig.class)
+@Import({PersistenceConfig.class})
+@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:reset_db.sql")
 public class UserRepositoryTests {
 
     @Autowired
@@ -70,6 +74,20 @@ public class UserRepositoryTests {
         assertEquals(1L, testUser.getId());
         assertEquals("user1", testUser.getName());
         assertEquals("user1@email.com", testUser.getEmail());
+    }
+
+    @Test
+    void findUserByEmailTest() {
+        log.info("findUserByIdTest. Saving test user");
+        testRepo.save(new User(null, "user1", "user1@email.com"));
+
+        assertDoesNotThrow(() -> {
+            testRepo.findByEmail("user1@email.com");
+        });
+
+        List<User> testUserResult = testRepo.findByEmail("user1@email.com");
+        assertEquals(1, testUserResult.size());
+        assertEquals("user1@email.com", testUserResult.get(0).getEmail());
     }
 
     @Test
