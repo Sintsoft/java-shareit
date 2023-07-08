@@ -25,6 +25,7 @@ public class User {
     String name;
 
     @Email
+    @NotBlank
     @Column(name = "email", nullable = false, unique = true)
     String email;
 
