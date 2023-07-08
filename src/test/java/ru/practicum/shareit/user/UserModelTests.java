@@ -46,4 +46,14 @@ public class UserModelTests {
         assertEquals("user1", testUserDTO.getName());
         assertEquals("user1@email.com", testUserDTO.getEmail());
     }
+
+    @Test
+    void updateUserFromDto() {
+        User testUser = UserMapper.updateFromDto(
+                TestDataGenerator.generateTestUser(1L),
+                TestDataGenerator.generateTestRequestUserDTO(3L));
+        assertEquals(1L, testUser.getId());
+        assertEquals("user3", testUser.getName());
+        assertEquals("user3@email.com", testUser.getEmail());
+    }
 }

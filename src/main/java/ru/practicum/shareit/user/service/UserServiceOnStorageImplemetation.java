@@ -26,4 +26,13 @@ public class UserServiceOnStorageImplemetation implements UserService {
                 userStorage.createUser(
                         UserMapper.fromDto(inputDTO, null)));
     }
+
+    @Override
+    public ResponseUserDto updateUser(RequestUserDTO inputDTO, Long userId) {
+        return UserMapper.toDto(
+                userStorage.updateUser(
+                        UserMapper.updateFromDto(
+                                userStorage.readUserById(userId), inputDTO)));
+    }
+
 }

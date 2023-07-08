@@ -8,4 +8,6 @@ import ru.practicum.shareit.user.dto.ResponseUserDto;
 public interface UserService {
 
     ResponseUserDto createUser(RequestUserDTO inputDTO);
+
+    ResponseUserDto updateUser(RequestUserDTO inputDTO, Long userId);
 }

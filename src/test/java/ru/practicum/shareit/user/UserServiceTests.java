@@ -31,6 +31,10 @@ public class UserServiceTests {
 
     @BeforeEach
     void setUpUserRepoMock() {
+
+        /*
+        * Creation mocks
+        */
         when(mockedUserRepo.save(new User(null, "user1", "user1@email.com")))
                 .thenReturn(TestDataGenerator.generateTestUser(1L));
 
@@ -39,6 +43,20 @@ public class UserServiceTests {
 
         when(mockedUserRepo.save(new User(null, "errorusername", "error@mail.ru")))
                 .thenThrow(new DataIntegrityViolationException(("Some message")));
+
+        /*
+         * Update mocks
+         */
+        when(mockedUserRepo.save(new User(1L, "updateuser1", "user1@email.com")))
+                .thenReturn(TestDataGenerator.generateTestUser(1L));
+
+        when(mockedUserRepo.save(new User(2L, "user2", "user1@email.com")))
+                .thenThrow(new DataIntegrityViolationException(("conteins \"constraint\" substring")));
+
+        /*
+        * Read mocks
+        */
+        when(mockedUserRepo.findById(1L).get()).thenReturn(TestDataGenerator.generateTestUser(1L));
 
 
     }
@@ -54,26 +72,34 @@ public class UserServiceTests {
 
     @Test
     void createDuplicateEmailUserTest() {
-        ResponseUserDto testDto = testService.createUser(TestDataGenerator.generateTestRequestUserDTO(1L));
+        testService.createUser(TestDataGenerator.generateTestRequestUserDTO(1L));
 
-        assertThrows(ShareItUniqueValueCollision.class, () -> {
-            testService.createUser(new RequestUserDTO("user2", "user1@email.com"));
-        });
+        assertThrows(ShareItUniqueValueCollision.class, () ->
+                testService.createUser(new RequestUserDTO("user2", "user1@email.com")));
     }
 
     @Test
     void createNullUserTest() {
 
-        assertThrows(ShareItSQLExecutionFailed.class, () -> {
-            testService.createUser(new RequestUserDTO("errorusername", "error@mail.ru"));
-        });
+        assertThrows(ShareItSQLExecutionFailed.class, () ->
+                testService.createUser(new RequestUserDTO("errorusername", "error@mail.ru")));
     }
 
     @Test
     void createInvailUserTest() {
-        assertThrows(ShareItIvanlidEntity.class, () -> {
-            testService.createUser(new RequestUserDTO("  ", "not_a_email"));
-        });
+        assertThrows(ShareItIvanlidEntity.class, () ->
+                testService.createUser(new RequestUserDTO("  ", "not_a_email")));
+    }
+
+    @Test
+    void updateUserTest() {
+        testService.createUser(TestDataGenerator.generateTestRequestUserDTO(1L));
+        ResponseUserDto testDto = testService.updateUser(
+                new RequestUserDTO("updateuser1", "user1@email.com"), 1L);
+
+        assertEquals(1L, testDto.getId());
+        assertEquals("updateuser1", testDto.getName());
+        assertEquals("user1@email.com", testDto.getEmail());
     }
 
 }

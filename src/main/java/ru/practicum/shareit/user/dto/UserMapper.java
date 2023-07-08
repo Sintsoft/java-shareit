@@ -20,4 +20,12 @@ public abstract class UserMapper {
                 user.getEmail()
         );
     }
+
+    public static User updateFromDto(User user, RequestUserDTO dto) {
+        return new User(
+                user.getId(),
+                dto.getName() != null && !user.getName().equals(dto.getName()) ? dto.getName() : user.getName(),
+                dto.getEmail() != null && !user.getEmail().equals(dto.getEmail()) ? dto.getEmail() : user.getEmail()
+        );
+    }
 }
