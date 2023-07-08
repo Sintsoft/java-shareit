@@ -10,6 +10,9 @@ import ru.practicum.shareit.user.dto.ResponseUserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.vault.UserStorage;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @Primary
@@ -24,7 +27,7 @@ public class UserServiceOnStorageImplemetation implements UserService {
         log.trace("LEVEL: Service. METHOD: createUser. INPUT: " + inputDTO);
         return UserMapper.toDto(
                 userStorage.createUser(
-                        UserMapper.fromDto(inputDTO, null)));
+                        UserMapper.fromDto(inputDTO)));
     }
 
     @Override
@@ -33,6 +36,21 @@ public class UserServiceOnStorageImplemetation implements UserService {
                 userStorage.updateUser(
                         UserMapper.updateFromDto(
                                 userStorage.readUserById(userId), inputDTO)));
+    }
+
+    @Override
+    public ResponseUserDto findUserById(Long userId) {
+        return UserMapper.toDto(userStorage.readUserById(userId));
+    }
+
+    @Override
+    public List<ResponseUserDto> findAllUsers(int from, int size) {
+        return userStorage.readManyUsers(from, size).stream().map(UserMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        userStorage.deleteUser(userId);
     }
 
 }

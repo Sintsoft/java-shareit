@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.jdbc.Sql;
 import ru.practicum.shareit.TestDataGenerator;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.vault.UserRepository;
 import ru.practicum.shareit.utility.configuration.PersistenceConfig;
@@ -95,6 +96,7 @@ public class UserRepositoryTests {
         assertTrue(testRepo.findById(10L).isEmpty());
     }
 
+
     @Test
     void updateUserTest() {
         log.info("updateUserTest. Saving test user");
@@ -108,6 +110,22 @@ public class UserRepositoryTests {
         assertEquals("newuser1", testUser.getName());
         assertEquals("user1@email.com", testUser.getEmail());
 
+    }
+
+    @Test
+    void finadFromSizeTest() {
+        for (long i = 1L; i <= 10L; i++) {
+            testRepo.save(
+                    UserMapper.fromDto(
+                            TestDataGenerator.generateTestRequestUserDTO(i)
+                    )
+            );
+        }
+
+        assertEquals(10, testRepo.findAllFromSize(0, 100).size());
+        assertEquals(1, testRepo.findAllFromSize(2, 1).size());
+        assertEquals(7, testRepo.findAllFromSize(3, 10).size());
+        assertEquals(0, testRepo.findAllFromSize(15, 10).size());
     }
 
     @Test

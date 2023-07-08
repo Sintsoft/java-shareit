@@ -3,7 +3,7 @@ package ru.practicum.shareit.user.vault;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utility.exceptions.ShareItEntityNotFound;
@@ -13,6 +13,7 @@ import ru.practicum.shareit.utility.exceptions.ShareItUniqueValueCollision;
 
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static javax.validation.Validation.buildDefaultValidatorFactory;
@@ -32,9 +33,10 @@ public class UserStorage {
                 throw new ShareItIvanlidEntity("New user must not have id");
             }
             return saveIfVaild(newUser);
-        } catch (DataIntegrityViolationException ex) {
-            log.info("Email collision during creation. Email - " + newUser.getEmail());
+        } catch (DataAccessException ex) {
+            log.info("SQL exception!");
             if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("constraint")) {
+                log.info("Email collision during creation. Email - " + newUser.getEmail());
                 throw new ShareItUniqueValueCollision("This email is already taken");
             }
             throw new ShareItSQLExecutionFailed("Failed to save new user due to: " + ex.getMessage());
@@ -46,22 +48,29 @@ public class UserStorage {
         try {
             if (updUser.getId() == null) {
                 throw new ShareItIvanlidEntity("Existing user must have id");
-            } else if (!repository.findByEmail(updUser.getEmail()).isEmpty()) { // Не на всех БД constraint работает при update
+            }
+            User oldUser = readUserById(updUser.getId());
+            if (!oldUser.getEmail().equals(updUser.getEmail())
+                    && !repository.findByEmail(updUser.getEmail()).isEmpty()) { // Не на всех БД constraint работает при update
                 throw new ShareItUniqueValueCollision("This email is already taken");
             }
             return saveIfVaild(updUser);
-        } catch (DataIntegrityViolationException ex) {
-            log.info("Email collision during creation. Email - " + updUser.getEmail());
-            if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("constraint")) {
-                throw new ShareItUniqueValueCollision("This email is already taken");
-            }
-            throw new ShareItSQLExecutionFailed("Failed to save new user due to: " + ex.getMessage());
+        } catch (DataAccessException ex) {
+            throw new ShareItSQLExecutionFailed("Failed to update user due to: " + ex.getMessage());
         }
     }
 
     public User readUserById(Long userId) {
         return repository.findById(userId)
                 .orElseThrow(() -> new ShareItEntityNotFound("User with id = " + userId + " not found"));
+    }
+
+    public List<User> readManyUsers(int from, int size) {
+        return repository.findAllFromSize(from, size);
+    }
+
+    public void deleteUser(Long userId) {
+        repository.delete(readUserById(userId));
     }
 
     private User saveIfVaild(User savedUser) {

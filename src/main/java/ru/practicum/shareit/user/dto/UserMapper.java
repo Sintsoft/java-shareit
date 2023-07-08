@@ -5,9 +5,9 @@ import ru.practicum.shareit.user.model.User;
 public abstract class UserMapper {
 
 
-    public static User fromDto(RequestUserDTO dto, Long userId) {
+    public static User fromDto(RequestUserDTO dto) {
         return new User(
-                userId,
+                null,
                 dto.getName(),
                 dto.getEmail()
         );
