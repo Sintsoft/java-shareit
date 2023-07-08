@@ -33,7 +33,7 @@ public class PersistenceConfig {
     public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setDriverClassName(environment.getRequiredProperty("spring.datasource.driverClassName"));
-        dataSource.setUrl(environment.getRequiredProperty("spring.datasource.url"));
+        dataSource.setUrl(environment.getRequiredProperty("spring.datasource.url") + ";DB_CLOSE_DELAY=-1;INIT=RUNSCRIPT FROM 'src/main/resources/schema.sql'");
         dataSource.setUsername(environment.getRequiredProperty("spring.datasource.username"));
         dataSource.setPassword(environment.getRequiredProperty("spring.datasource.password"));
         return dataSource;

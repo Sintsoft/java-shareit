@@ -16,6 +16,7 @@ import ru.practicum.shareit.item.dto.RequestItemDto;
 import ru.practicum.shareit.item.dto.ResponseItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.vault.ItemStorage;
+import ru.practicum.shareit.request.vault.ItemRequestStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.vault.UserStorage;
 import ru.practicum.shareit.utility.errorHandling.exceptions.ShareItInvalidEntity;
@@ -43,17 +44,27 @@ public class ItemServiceWithDBRepo implements ItemService {
     @Autowired
     private final CommentStorage commentStorage;
 
+    @Autowired
+    private final ItemRequestStorage itemRequestStorage;
+
     @Override
     public ResponseItemDto createItem(RequestItemDto dto, Long userId) {
         log.trace("Level: SERVICE. Call of createItem. Payload: " + dto);
         try {
             log.trace("Parsing item");
             Item newItem = ItemMapper.fromDto(dto);
+            if (dto.getRequestId() != null) {
+                log.trace("Checking request...");
+                newItem.setRequest(itemRequestStorage.loadRequest(dto.getRequestId()));
+            }
 
             log.trace("Item is vaild. Validating user... ");
             newItem.setUser(userStorage.loadUser(userId));
 
-            log.trace("User is valid. Saving item ...");
+            log.trace("User is valid.");
+
+
+            log.trace("Saving item ...");
             return ItemMapper.toDto(itemStorage.createItem(newItem), null, null, List.of());
         } catch (NullPointerException ex) {
             log.info("Got null pointer exception.");
@@ -76,7 +87,7 @@ public class ItemServiceWithDBRepo implements ItemService {
                 log.info("Incorrect item owner id.");
                 throw new ShareItNotAllowedAction("Incorrect item owner id.");
             }
-            User owner = userStorage.loadUser(userId); // Проверим консистентность данных
+            userStorage.loadUser(userId); // Проверим консистентность данных
 
             log.trace("User is valid. Saving item ...");
             itemToUpd = ItemMapper.updateFromDto(itemToUpd, dto);
@@ -132,7 +143,7 @@ public class ItemServiceWithDBRepo implements ItemService {
         }
         return itemStorage.searchForItems(searchString)
                 .stream()
-                .filter(item -> item.getAvailable() == true)
+                .filter(item -> item.getAvailable())
                 .map(
                         item -> ItemMapper.toDto(item,
                                 bookingStorage.loadItemLastBooking(item),
@@ -146,7 +157,7 @@ public class ItemServiceWithDBRepo implements ItemService {
     public NestedCommentDto postComment(RequestCommentDto commentDto, Long itemId, Long userId) {
         User user = userStorage.loadUser(userId);
         Item item = itemStorage.loadItem(itemId);
-        if (bookingStorage.loadUserBookings(user, BookingRequestStatus.PAST)
+        if (bookingStorage.loadUserBookings(user, BookingRequestStatus.PAST, 0, Integer.MAX_VALUE)
                 .noneMatch(matchItem -> matchItem.getItem().getId().equals(itemId))
             || commentDto.getText().isBlank()) {
             throw new ShareItInvalidEntity("This user can't comment item");
