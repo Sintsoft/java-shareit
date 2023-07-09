@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.utility.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.exceptions.ShareItIvanlidEntity;
 import ru.practicum.shareit.utility.exceptions.ShareItSQLExecutionFailed;
 
@@ -32,8 +33,26 @@ public class ItemStorage {
             }
             return saveIfValid(newItem);
         } catch (DataAccessException ex) {
-            throw new ShareItSQLExecutionFailed("Failed to save new user due to: " + ex.getMessage());
+            throw new ShareItSQLExecutionFailed("Failed to save new item due to: " + ex.getMessage());
         }
+    }
+
+    public Item updateItem(Item newItem) {
+        log.trace("LEVEL: Storage. METHOD: createItem. INPUT: " + newItem);
+        try {
+            if (newItem.getId() == null) {
+                throw new ShareItIvanlidEntity("Existing item must not have id");
+            }
+            return saveIfValid(newItem);
+        } catch (DataAccessException ex) {
+            throw new ShareItSQLExecutionFailed("Failed to update item due to: " + ex.getMessage());
+        }
+    }
+
+    public Item readItemById(Long itemId) {
+        return repository.findById(itemId).orElseThrow(
+                () -> new ShareItEntityNotFound("Item with id = " + itemId + " not found")
+        );
     }
 
     private Item saveIfValid(Item savedItem) {
