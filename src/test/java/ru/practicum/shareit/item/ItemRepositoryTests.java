@@ -37,4 +37,95 @@ public class ItemRepositoryTests {
 
         assertEquals(1L, testItem.getId());
     }
+
+    @Test
+    void updateItemTest() {
+        Item testItem = testRepo.save(ItemMapper.fromDto(
+                TestDataGenerator.generateTestRequestItemDTO(1L, null),
+                TestDataGenerator.generateTestUser(1L),
+                TestDataGenerator.generateTestItemRequest(1L, 2L)));
+        testItem.setName("new item name");
+        testItem.setAvailable(false);
+        testItem = testRepo.save(testItem);
+
+        assertEquals(1L, testItem.getId());
+        assertEquals("new item name", testItem.getName());
+        assertEquals("item1 description", testItem.getDescription());
+        assertFalse(testItem.getAvailable());
+    }
+
+    @Test
+    void findItemTest() {
+        testRepo.save(ItemMapper.fromDto(
+                TestDataGenerator.generateTestRequestItemDTO(1L, null),
+                TestDataGenerator.generateTestUser(1L),
+                TestDataGenerator.generateTestItemRequest(1L, 2L)));
+
+        Item testItem = testRepo.findById(1L).get();
+
+        assertEquals(1L, testItem.getId());
+    }
+
+    @Test
+    void findAllItemsTest() {
+        testRepo.save(ItemMapper.fromDto(
+                TestDataGenerator.generateTestRequestItemDTO(1L, null),
+                TestDataGenerator.generateTestUser(1L),
+                TestDataGenerator.generateTestItemRequest(1L, 2L)));
+
+        assertEquals(1, testRepo.findAll().size());
+
+        testRepo.save(ItemMapper.fromDto(
+                TestDataGenerator.generateTestRequestItemDTO(2L, null),
+                TestDataGenerator.generateTestUser(2L),
+                null));
+
+        assertEquals(2, testRepo.findAll().size());
+    }
+
+    @Test
+    void searchItemTest() {
+        testRepo.save(ItemMapper.fromDto(
+                TestDataGenerator.generateTestRequestItemDTO(1L, 1L),
+                TestDataGenerator.generateTestUser(1L),
+                TestDataGenerator.generateTestItemRequest(1L, 2L)));
+        testRepo.save(ItemMapper.fromDto(
+                TestDataGenerator.generateTestRequestItemDTO(2L, 1L),
+                TestDataGenerator.generateTestUser(1L),
+                TestDataGenerator.generateTestItemRequest(1L, 2L)));
+
+        assertEquals(1, testRepo.findByNameOrDescriptionContainingIgnoreCase("IteM1", "iTEm1").size());
+    }
+
+    @Test
+    void findUserItems() {
+        testRepo.save(ItemMapper.fromDto(
+                TestDataGenerator.generateTestRequestItemDTO(1L, null),
+                TestDataGenerator.generateTestUser(1L),
+                null));
+        testRepo.save(ItemMapper.fromDto(
+                TestDataGenerator.generateTestRequestItemDTO(2L, null),
+                TestDataGenerator.generateTestUser(2L),
+                null));
+
+        assertEquals(1, testRepo.findUserItems(TestDataGenerator.generateTestUser(1L)).size());
+        assertEquals(1, testRepo.findUserItems(TestDataGenerator.generateTestUser(2L)).size());
+        assertEquals(2, testRepo.findAll().size());
+    }
+
+    @Test
+    void findRequestItems() {
+        testRepo.save(ItemMapper.fromDto(
+                TestDataGenerator.generateTestRequestItemDTO(1L, 1L),
+                TestDataGenerator.generateTestUser(1L),
+                TestDataGenerator.generateTestItemRequest(1L, 2L)));
+        testRepo.save(ItemMapper.fromDto(
+                TestDataGenerator.generateTestRequestItemDTO(2L, 2L),
+                TestDataGenerator.generateTestUser(2L),
+                TestDataGenerator.generateTestItemRequest(2L, 1L)));
+
+        assertEquals(1, testRepo.findRequestItems(TestDataGenerator.generateTestItemRequest(1L, 2L)).size());
+        assertEquals(1, testRepo.findRequestItems(TestDataGenerator.generateTestItemRequest(2L, 1L)).size());
+        assertEquals(2, testRepo.findAll().size());
+    }
 }
