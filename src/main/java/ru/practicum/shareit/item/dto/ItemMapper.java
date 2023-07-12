@@ -17,6 +17,15 @@ public abstract class ItemMapper {
         );
     }
 
+
+    public static NestedItemDTO toNested(Item item) {
+        return new NestedItemDTO(
+                item.getId(),
+                item.getName(),
+                item.getDescription()
+        );
+    }
+
     public static ResponseItemDTO toDto(Item item) {
         return new ResponseItemDTO(
                 item.getId(),

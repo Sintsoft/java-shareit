@@ -1,13 +1,13 @@
 package ru.practicum.shareit.request.dto;
 
-import ru.practicum.shareit.item.dto.RequestItemDTO;
-import ru.practicum.shareit.item.dto.ResponseItemDTO;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class ItemRequestMapper {
 
@@ -25,7 +25,7 @@ public abstract class ItemRequestMapper {
                 request.getId(),
                 request.getDescription(),
                 request.getCreated(),
-                items
+                items.stream().map(ItemMapper::toNested).collect(Collectors.toList())
         );
     }
 }
