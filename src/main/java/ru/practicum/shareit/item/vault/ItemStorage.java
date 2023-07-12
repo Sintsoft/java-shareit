@@ -6,13 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utility.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.exceptions.ShareItIvanlidEntity;
 import ru.practicum.shareit.utility.exceptions.ShareItSQLExecutionFailed;
 
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static javax.validation.Validation.buildDefaultValidatorFactory;
@@ -53,6 +55,21 @@ public class ItemStorage {
         return repository.findById(itemId).orElseThrow(
                 () -> new ShareItEntityNotFound("Item with id = " + itemId + " not found")
         );
+    }
+
+    public List<Item> readUserItems(User user, int from, int size) {
+        return repository.findUserItems(user.getId(), from, size);
+    }
+
+    public List<Item> readRequestItems(ItemRequest request, int from, int size) {
+        return repository.findUserItems(request.getId(), from, size);
+    }
+
+    public List<Item> searchItems(String searchString, int from, int size) {
+        if (searchString.isBlank()) {
+            return List.of();
+        }
+        return repository.seachForItems("%" + searchString + "%", from, size);
     }
 
     private Item saveIfValid(Item savedItem) {

@@ -4,10 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.practicum.shareit.utility.exceptions.ShareItEntityNotFound;
-import ru.practicum.shareit.utility.exceptions.ShareItIvanlidEntity;
-import ru.practicum.shareit.utility.exceptions.ShareItSQLExecutionFailed;
-import ru.practicum.shareit.utility.exceptions.ShareItUniqueValueCollision;
+import ru.practicum.shareit.utility.exceptions.*;
 
 import java.util.Arrays;
 
@@ -17,6 +14,12 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleInvalidEnitty(ShareItIvanlidEntity ex) {
+        return new ErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorResponse handleUnallowedAction(ShareItUnalllowedAction ex) {
         return new ErrorResponse(ex.getMessage());
     }
 

@@ -2,21 +2,27 @@ package ru.practicum.shareit.item.vault;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.request.model.ItemRequest;
-import ru.practicum.shareit.user.model.User;
+
 
 import java.util.List;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    @Query("select i from Item i where i.user = ?1 order by i.id asc")
-    List<Item> findUserItems(User user);
+    @Query(value = "select i.* from items i where i.user_id = ?1" +
+            " order by i.id asc limit ?3 offset ?2", nativeQuery = true)
+    List<Item> findUserItems(Long user, int from, int size);
 
     List<Item> findByNameOrDescriptionContainingIgnoreCase(String nameSearchString, String descriptionSearchString);
 
-    @Query("select i from Item i where i.request = ?1 order by i.id asc")
-    List<Item> findRequestItems(ItemRequest request);
+    @Query(value = "select i.* from items i where i.request_id = ?1" +
+            " order by i.id asc limit ?3 offset ?2", nativeQuery = true)
+    List<Item> findRequestItems(Long requestId, int from, int size);
+
+    @Query(value = "select i.* from items i where i.item_name ILIKE :search OR i.description ILIKE :search" +
+            " order by i.id asc limit :size offset :from", nativeQuery = true)
+    List<Item> seachForItems(@Param("search") String searchString, @Param("from") int from, @Param("size") int size);
 }

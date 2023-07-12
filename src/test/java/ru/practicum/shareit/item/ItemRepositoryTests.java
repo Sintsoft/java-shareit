@@ -94,7 +94,7 @@ public class ItemRepositoryTests {
                 TestDataGenerator.generateTestUser(1L),
                 TestDataGenerator.generateTestItemRequest(1L, 2L)));
 
-        assertEquals(1, testRepo.findByNameOrDescriptionContainingIgnoreCase("IteM1", "iTEm1").size());
+        assertEquals(1, testRepo.seachForItems("%Em1%", 0, 10).size());
     }
 
     @Test
@@ -108,8 +108,8 @@ public class ItemRepositoryTests {
                 TestDataGenerator.generateTestUser(2L),
                 null));
 
-        assertEquals(1, testRepo.findUserItems(TestDataGenerator.generateTestUser(1L)).size());
-        assertEquals(1, testRepo.findUserItems(TestDataGenerator.generateTestUser(2L)).size());
+        assertEquals(1, testRepo.findUserItems(1L, 0, 10).size());
+        assertEquals(1, testRepo.findUserItems(2L, 0, 10).size());
         assertEquals(2, testRepo.findAll().size());
     }
 
@@ -124,8 +124,10 @@ public class ItemRepositoryTests {
                 TestDataGenerator.generateTestUser(2L),
                 TestDataGenerator.generateTestItemRequest(2L, 1L)));
 
-        assertEquals(1, testRepo.findRequestItems(TestDataGenerator.generateTestItemRequest(1L, 2L)).size());
-        assertEquals(1, testRepo.findRequestItems(TestDataGenerator.generateTestItemRequest(2L, 1L)).size());
+        assertEquals(1, testRepo.findRequestItems(1L, 0, 10).size());
+        assertEquals(1, testRepo.findRequestItems(2L, 0, 10).size());
         assertEquals(2, testRepo.findAll().size());
     }
+
+
 }

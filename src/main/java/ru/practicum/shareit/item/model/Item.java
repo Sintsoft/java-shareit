@@ -43,12 +43,15 @@ public class Item {
     private ItemRequest request;
 
     public Item updateFromDto(RequestItemDTO dto) {
-        if (dto.getName().isBlank())
+        if (dto.getName() != null && !dto.getName().isBlank()) {
             this.name = dto.getName();
-        if (dto.getDescription().isBlank())
+        }
+        if (dto.getDescription() != null && !dto.getDescription().isBlank()) {
             this.description = dto.getDescription();
-        if (dto.getAvailable() != null)
+        }
+        if (dto.getAvailable() != null) {
             this.available = dto.getAvailable();
+        }
         return this;
     }
 

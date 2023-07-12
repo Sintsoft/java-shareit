@@ -1,13 +1,19 @@
 package ru.practicum.shareit;
 
+import ru.practicum.shareit.item.dto.NestedItemDTO;
 import ru.practicum.shareit.item.dto.RequestItemDTO;
+import ru.practicum.shareit.item.dto.ResponseItemDTO;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.dto.RequestItemRequestDTO;
+import ru.practicum.shareit.request.dto.ResponseItemRequestDTO;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.dto.RequestUserDTO;
 import ru.practicum.shareit.user.dto.ResponseUserDTO;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
+
 
 public abstract class TestDataGenerator {
 
@@ -62,6 +68,24 @@ public abstract class TestDataGenerator {
         );
     }
 
+    public static ResponseItemDTO generateTestResponseItemDTO(long id, Long requestId) {
+        return new ResponseItemDTO(
+                id,
+                "item" + id,
+                "item" + id + " description",
+                true,
+                requestId
+        );
+    }
+
+    public static NestedItemDTO generateTestNestedItemDTO(long id) {
+        return new NestedItemDTO(
+                id,
+                "item" + id,
+                "item" + id + " description"
+        );
+    }
+
 
     /*
     * Item request data generation block
@@ -73,6 +97,19 @@ public abstract class TestDataGenerator {
                 "request" + id + " description",
                 LocalDateTime.now(),
                 generateTestUser(creatorId)
+        );
+    }
+
+    public static RequestItemRequestDTO generateTestRequestItemRequest(Long id) {
+        return new RequestItemRequestDTO("request" + id + " description");
+    }
+
+    public ResponseItemRequestDTO generateTestResponseItemRequest(Long id, Long itemId) {
+        return new ResponseItemRequestDTO(
+                id,
+                "request" + id + " description",
+                LocalDateTime.now(),
+                List.of(generateTestNestedItemDTO(itemId))
         );
     }
 
