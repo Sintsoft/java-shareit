@@ -190,13 +190,5 @@ public class ItemServiceTests {
         assertEquals(1, testDtos.size());
     }
 
-//    @Test
-//    void addCommentTest() {
-//        NestedCommentDto testDto = testItemService.postComment(
-//                new RequestCommentDto("text"), 1L, 2L);
-//        verify(mockItemRepo).findById(1L);
-//        verify(mockerUserRepo).findById(2L);
-//        verify(mockBookingRepo).getUserBookings(2L, 0, Integer.MAX_VALUE);
-//    }
 
 }

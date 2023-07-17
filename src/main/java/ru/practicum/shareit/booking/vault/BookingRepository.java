@@ -12,7 +12,6 @@ import java.util.List;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    //@Query("select b from Booking b where b.booker = ?1 order by b.start DESC")
     @Query(value = "select b.* from shareit.bookings b where b.booker_id = ?1 order by b.start_date DESC " +
             "LIMIT ?3 OFFSET ?2",
             nativeQuery = true)
@@ -22,12 +21,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> getUserItemsBookings(User booker, Pageable pageable);
 
     @Query(value = "select b.* from shareit.bookings b where b.item_id = ?1 " +
-            "and start_date < now() AND status = 'APPROVED' order by b.start_date DESC LIMIT 1",
+            "and start_date < now() AND status = 'APPROVED' order by b.start_date DESC FETCH FIRST 1 ROW ONLY",
             nativeQuery = true)
     List<Booking> getItemLastBooking(long itemId);
 
     @Query(value = "select b.* from shareit.bookings b where b.item_id = ?1 " +
-            "and start_date > now() AND status NOT IN ('REJECTED', 'CANCELED') order by b.start_date ASC LIMIT 1",
+            "and start_date > now() AND status NOT IN ('REJECTED', 'CANCELED') order by b.start_date ASC FETCH FIRST 1 ROW ONLY",
             nativeQuery = true)
     List<Booking> getItemNextBooking(long itemId);
 }

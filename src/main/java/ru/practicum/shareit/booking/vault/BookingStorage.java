@@ -100,14 +100,14 @@ public class BookingStorage {
 
     @Transactional
     private Booking saveToRepo(Booking booking) {
+        if (
+                booking.getStart() == null || booking.getEnd() == null
+                        || booking.getStart().isAfter(booking.getEnd())
+                        || booking.getStart().isEqual(booking.getEnd())
+                        || booking.getStart().isBefore(LocalDateTime.now())) {
+            throw new ShareItInvalidEntity("Set coorrect time");
+        }
         try {
-            if (
-                    booking.getStart() == null || booking.getEnd() == null
-                    || booking.getStart().isAfter(booking.getEnd())
-                    || booking.getStart().isEqual(booking.getEnd())
-                    || booking.getStart().isBefore(LocalDateTime.now())) {
-                throw new ShareItInvalidEntity("Set coorrect time");
-            }
             return repository.save(booking);
         } catch (DataIntegrityViolationException ex) {
             log.debug("We got SQL error");

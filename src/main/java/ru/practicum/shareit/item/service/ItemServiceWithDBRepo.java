@@ -61,10 +61,7 @@ public class ItemServiceWithDBRepo implements ItemService {
             log.trace("Item is vaild. Validating user... ");
             newItem.setUser(userStorage.loadUser(userId));
 
-            log.trace("User is valid.");
-
-
-            log.trace("Saving item ...");
+            log.trace("User is valid. Saving item ...");
             return ItemMapper.toDto(itemStorage.createItem(newItem), null, null, List.of());
         } catch (NullPointerException ex) {
             log.info("Got null pointer exception.");

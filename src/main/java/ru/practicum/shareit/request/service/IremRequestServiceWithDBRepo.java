@@ -36,10 +36,10 @@ public class IremRequestServiceWithDBRepo implements ItemRequestService {
     @Override
     public ResponseItemRequestDto createRequest(RequestItemRequestDto dto, Long userId) {
         log.trace("Level: SERVICE. Call of createItem. Payload: " + dto + ",  " + userId);
+        if (dto.getDescription() == null || dto.getDescription().isBlank()) {
+            throw new ShareItInvalidEntity("Fill description");
+        }
         try {
-            if (dto.getDescription() == null || dto.getDescription().isBlank()) {
-                throw new ShareItInvalidEntity("Fill description");
-            }
             return ItemRequestMapper.toDto(
                     itemRequestStorage.createRequest(
                             ItemRequestMapper.fromDto(dto, userStorage.loadUser(userId))),
