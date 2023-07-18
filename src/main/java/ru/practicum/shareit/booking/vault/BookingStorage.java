@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
@@ -55,15 +56,22 @@ public class BookingStorage {
     }
 
     @Transactional
-    public Stream<Booking> loadUserBookings(User user, BookingRequestStatus status) {
-        return repository.getUserBookings(user)
+    public Stream<Booking> loadUserBookings(User user, BookingRequestStatus status, int from, int size) {
+        if (from < 0 || size <= 0) {
+            throw new ShareItInvalidEntity("Bad request params");
+        }
+        Stream<Booking> bookings = repository.getUserBookings(user.getId(), from, size)
                 .stream()
                 .filter(booking -> filterBookings(booking, status));
+        return bookings;
     }
 
     @Transactional
-    public Stream<Booking> loadUserItemsBookings(User user, BookingRequestStatus status) {
-        return repository.getUserItemsBookings(user)
+    public Stream<Booking> loadUserItemsBookings(User user, BookingRequestStatus status, int from, int size) {
+        if (from < 0 || size <= 0) {
+            throw new ShareItInvalidEntity("Bad request params");
+        }
+        return repository.getUserItemsBookings(user, PageRequest.of(from, size))
                 .stream()
                 .filter(booking -> filterBookings(booking, status));
     }
@@ -92,12 +100,14 @@ public class BookingStorage {
 
     @Transactional
     private Booking saveToRepo(Booking booking) {
+        if (
+                booking.getStart() == null || booking.getEnd() == null
+                        || booking.getStart().isAfter(booking.getEnd())
+                        || booking.getStart().isEqual(booking.getEnd())
+                        || booking.getStart().isBefore(LocalDateTime.now())) {
+            throw new ShareItInvalidEntity("Set coorrect time");
+        }
         try {
-            if (booking.getStart().isAfter(booking.getEnd())
-                    || booking.getStart().isEqual(booking.getEnd())
-                    || booking.getStart().isBefore(LocalDateTime.now())) {
-                throw new ShareItInvalidEntity("Set coorrect time");
-            }
             return repository.save(booking);
         } catch (DataIntegrityViolationException ex) {
             log.debug("We got SQL error");
