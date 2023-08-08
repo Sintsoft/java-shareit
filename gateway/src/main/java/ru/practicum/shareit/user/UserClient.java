@@ -12,7 +12,6 @@ import ru.practicum.shareit.utility.exceptions.ShareItIvanlidEntity;
 
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-
 import java.util.stream.Collectors;
 
 import static javax.validation.Validation.buildDefaultValidatorFactory;
@@ -32,6 +31,9 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> createUser(UserRequestDto dto) {
+        if (dto.getName() == null || dto.getEmail() ==null) {
+            throw new ShareItIvanlidEntity("Null fields not allowed");
+        }
         try (ValidatorFactory factory = buildDefaultValidatorFactory()) {
             Validator validator = factory.getValidator();
             if (!validator.validate(dto).isEmpty()) {
@@ -45,5 +47,24 @@ public class UserClient extends BaseClient {
 
         }
         return post("", dto);
+    }
+
+    public ResponseEntity<Object> updateUser(Long userid, UserRequestDto dto) {
+        if (userid == null || userid < 1) {
+            throw new ShareItIvanlidEntity("Existing user must have id");
+        }
+        return patch("/" + userid.toString(), dto);
+    }
+
+    public ResponseEntity<Object> getUser(Long userid) {
+        return get("/" + userid);
+    }
+
+    public ResponseEntity<Object> getUsers() {
+        return get("");
+    }
+
+    public ResponseEntity<Object> deleteUser(Long userid) {
+        return delete("/" + userid);
     }
 }

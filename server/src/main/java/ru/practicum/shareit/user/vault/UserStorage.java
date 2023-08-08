@@ -11,10 +11,7 @@ import ru.practicum.shareit.utility.exceptions.ShareItIvanlidEntity;
 import ru.practicum.shareit.utility.exceptions.ShareItSQLExecutionFailed;
 import ru.practicum.shareit.utility.exceptions.ShareItUniqueValueCollision;
 
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import java.util.List;
-import java.util.stream.Collectors;
 
 //import static javax.validation.Validation.buildDefaultValidatorFactory;
 
@@ -29,9 +26,6 @@ public class UserStorage {
     public User createUser(User newUser) {
         log.trace("LEVEL: Storage. METHOD: createUser. INPUT: " + newUser);
         try {
-            if (newUser.getId() != null) {
-                throw new ShareItIvanlidEntity("New user must not have id");
-            }
             return saveIfVaild(newUser);
         } catch (DataAccessException ex) {
             log.info("SQL exception!");
@@ -46,9 +40,6 @@ public class UserStorage {
     public User updateUser(User updUser) {
         log.trace("LEVEL: Storage. METHOD: createUser. INPUT: " + updUser);
         try {
-            if (updUser.getId() == null) {
-                throw new ShareItIvanlidEntity("Existing user must have id");
-            }
             User oldUser = readUserById(updUser.getId());
             if (!oldUser.getEmail().equals(updUser.getEmail())
                     && !repository.findByEmail(updUser.getEmail()).isEmpty()) { // Не на всех БД constraint работает при update
