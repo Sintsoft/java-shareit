@@ -1,0 +1,148 @@
+openapi: '3.0.0'
+info:
+  version: '0.4.0'
+  title: 'ShareIt'
+
+servers:
+  - url: http://localhost:9090
+
+tags:
+  - name: User
+
+paths:
+  /users:
+    post:
+      description: Create new user
+      tags:
+        - User
+      requestBody:
+        $ref: "#/components/requestBodies/UserRequestBody"
+      responses:
+        200:
+          description: OK
+          $ref: "#/components/responses/UserResponseBody"
+        400:
+          description: Bad user parameters
+          $ref: "#/components/responses/ErrorResponse"
+    get:  
+      description: Get all users
+      tags:
+        - User
+      responses:
+        200:
+          description: OK
+          $ref: "#/components/responses/UserResponseBody"
+        400:
+          description: Bad user parameters
+          $ref: "#/components/responses/ErrorResponse"
+
+  /users/{userId}:
+
+    put:
+      description: Update user
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the user to update
+      tags:
+        - User
+      requestBody:
+        $ref: "#/components/requestBodies/UserRequestBody"
+      responses:
+        200:
+          description: OK
+          $ref: "#/components/responses/UserResponseBody"
+        404:
+          description: User not found
+          $ref: "#/components/responses/ErrorResponse"
+    get:
+      description: Get user by id
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the user to get
+      tags:
+        - User
+      responses:
+        200:
+          description: OK
+          $ref: "#/components/responses/UserResponseBody"
+        404:
+          description: User not found
+          $ref: "#/components/responses/ErrorResponse"
+    delete:
+      description: Get user by id
+      parameters:
+        - in: path
+          name: userId
+          schema:
+            type: integer
+          required: true
+          description: Numeric ID of the user to delete
+      tags:
+        - User
+      responses:
+        200:
+          description: OK
+        404:
+          description: User not found
+          $ref: "#/components/responses/ErrorResponse"
+
+components:
+  requestBodies:
+
+    UserRequestBody:
+      description: User parameters
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                description: user name
+              email:
+                type: string
+                description: user email
+
+
+  responses:
+
+    UserResponseBody:
+      description: User entity
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: user id
+              name:
+                type: string
+                description: user name
+              email:
+                type: string
+                description: user email
+
+    ErrorResponse:
+      description: Error ersponse body
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error: 
+                type: string
+                description: error message
+              exception:
+                type: string
+                description: Exception type
+            required:
+              - error
