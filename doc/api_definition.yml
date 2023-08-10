@@ -8,6 +8,7 @@ servers:
 
 tags:
   - name: User
+  - name: Item Request
 
 paths:
   /users:
@@ -31,7 +32,12 @@ paths:
       responses:
         200:
           description: OK
-          $ref: "#/components/responses/UserResponseBody"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
         400:
           description: Bad user parameters
           $ref: "#/components/responses/ErrorResponse"
@@ -94,7 +100,68 @@ paths:
           description: User not found
           $ref: "#/components/responses/ErrorResponse"
 
+  /requests:
+    post:
+      description: Create item request
+      parameters:
+        - in: header
+          name: X-Sharer-User-Id
+          description: Creator user id
+          schema:
+            type: string
+          required: true
+      tags:
+        - Item Request
+      responses:
+        200:
+          description: OK
+          $ref: "#/components/responses/ItemRequestBody"
+        400:
+          description: Bad user parameters
+          $ref: "#/components/responses/ErrorResponse"
+
+
+
 components:
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: user id
+        name:
+          type: string
+          description: user name
+        email:
+          type: string
+          description: user email
+
+    ItemRequest:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: request id
+        description:
+          type: string
+          description: request description
+        created:
+          type: string
+          description: Timespamp when request was created
+        items:
+          type: array
+          items:
+            type: object
+            description: Items shared for request
+            properties:
+              id: 
+                type: integer
+                description: Item id
+              description: 
+                type: string
+
   requestBodies:
 
     UserRequestBody:
@@ -119,17 +186,16 @@ components:
       content:
         application/json:
           schema:
-            type: object
-            properties:
-              id:
-                type: integer
-                description: user id
-              name:
-                type: string
-                description: user name
-              email:
-                type: string
-                description: user email
+            $ref: "#/components/schemas/User"
+
+    ItemRequestBody:
+      description: Item request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ItemRequest"
+                    
+
 
     ErrorResponse:
       description: Error ersponse body

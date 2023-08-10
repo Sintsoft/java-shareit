@@ -31,7 +31,7 @@ public class UserClient extends BaseClient {
     }
 
     public ResponseEntity<Object> createUser(UserRequestDto dto) {
-        if (dto.getName() == null || dto.getEmail() ==null) {
+        if (dto.getName().isBlank() || dto.getEmail().isBlank()) {
             throw new ShareItIvanlidEntity("Null fields not allowed");
         }
         try (ValidatorFactory factory = buildDefaultValidatorFactory()) {
