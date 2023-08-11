@@ -1,8 +1,13 @@
 package ru.practicum.shareit.item.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import ru.practicum.shareit.booking.dto.NestedBookingDTO;
+import ru.practicum.shareit.comment.dto.NestedCommentDTO;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -15,12 +20,20 @@ public class ResponseItemDTO {
     @NonNull
     private String name;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NonNull
     private String description;
 
     @NonNull
     private Boolean available;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @NonNull
+    private Long owner;
+
     private Long requestId;
+
+    private NestedBookingDTO lastBooking;
+
+    private NestedBookingDTO nextBooking;
+
+    private List<NestedCommentDTO> comments;
 }

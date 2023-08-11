@@ -34,13 +34,13 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public ResponseUserDTO getUser(@PathVariable Long userId) {
-        return service.findUserById(userId);
+        return service.getUser(userId);
     }
 
     @GetMapping
     public List<ResponseUserDTO> getUsers(@RequestParam(defaultValue = "0") int from,
                                           @RequestParam(defaultValue = "10") int size) {
-        return service.findAllUsers(from, size);
+        return service.getUsersPage(from, size);
     }
 
     @DeleteMapping("/{userId}")

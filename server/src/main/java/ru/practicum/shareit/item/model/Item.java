@@ -2,7 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.item.dto.RequestItemDTO;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
@@ -11,16 +11,20 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-@Data
 @Entity
+@Data
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Table(name = "items")
 public class Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "item_name")
     @NotBlank
@@ -33,10 +37,6 @@ public class Item {
     @Column(name = "available")
     @NotNull
     private Boolean available;
-
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
 
     @ManyToOne
     @JoinColumn(name = "request_id")
@@ -54,5 +54,4 @@ public class Item {
         }
         return this;
     }
-
 }

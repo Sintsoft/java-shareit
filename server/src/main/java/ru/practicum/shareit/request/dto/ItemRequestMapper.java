@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public abstract class ItemRequestMapper {
 
-    public static ItemRequest fromDto(RequestItemRequestDTO dto, User user) {
+    public static ItemRequest fromDTO(RequestItemRequestDTO dto, User user) {
         return new ItemRequest(
                 null,
                 dto.getDescription(),
@@ -20,12 +20,12 @@ public abstract class ItemRequestMapper {
         );
     }
 
-    public static ResponseItemRequestDTO toDto(ItemRequest request, List<Item> items) {
+    public static ResponseItemRequestDTO toDTO(ItemRequest itemRequest, List<Item> items) {
         return new ResponseItemRequestDTO(
-                request.getId(),
-                request.getDescription(),
-                request.getCreated(),
-                items.stream().map(ItemMapper::toNested).collect(Collectors.toList())
+                itemRequest.getId(),
+                itemRequest.getDescription(),
+                itemRequest.getCreated(),
+                items.stream().map(ItemMapper::toNestedDTO).collect(Collectors.toList())
         );
     }
 }

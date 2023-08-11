@@ -2,6 +2,7 @@ package ru.practicum.shareit.request.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.item.dto.NestedItemDTO;
 
 import java.time.LocalDateTime;
@@ -9,8 +10,8 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ResponseItemRequestDTO {
-
     private Long id;
 
     private String description;
@@ -18,5 +19,4 @@ public class ResponseItemRequestDTO {
     private LocalDateTime created;
 
     private List<NestedItemDTO> items;
-
 }

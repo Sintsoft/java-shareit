@@ -9,11 +9,11 @@ import java.util.List;
 @Service
 public interface ItemRequestService {
 
-    ResponseItemRequestDTO createRequest(Long userId, RequestItemRequestDTO dto);
+    ResponseItemRequestDTO createRequest(RequestItemRequestDTO dto, Long userId);
 
-    List<ResponseItemRequestDTO> getUserRequests(Long userId, int from, int size);
+    ResponseItemRequestDTO getRequest(Long requestId, Long userId);
 
     List<ResponseItemRequestDTO> getRequests(Long userId, int from, int size);
 
-    ResponseItemRequestDTO getRequest(Long requestId, long userId);
+    List<ResponseItemRequestDTO> getUserRequests(Long userId, int from, int size);
 }

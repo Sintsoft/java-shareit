@@ -13,7 +13,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleInvalidEnitty(ShareItIvanlidEntity ex) {
+    public ErrorResponse handleInvalidEnitty(ShareItInvalidEntity ex) {
         return new ErrorResponse(ex.getMessage());
     }
 

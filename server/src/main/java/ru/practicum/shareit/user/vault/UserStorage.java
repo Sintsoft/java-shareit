@@ -7,13 +7,11 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utility.exceptions.ShareItEntityNotFound;
-import ru.practicum.shareit.utility.exceptions.ShareItIvanlidEntity;
 import ru.practicum.shareit.utility.exceptions.ShareItSQLExecutionFailed;
 import ru.practicum.shareit.utility.exceptions.ShareItUniqueValueCollision;
 
+import javax.transaction.Transactional;
 import java.util.List;
-
-//import static javax.validation.Validation.buildDefaultValidatorFactory;
 
 @Slf4j
 @Component
@@ -21,12 +19,13 @@ import java.util.List;
 public class UserStorage {
 
     @Autowired
-    private final UserRepository repository;
+    private final UserRepoitory repository;
 
+    @Transactional
     public User createUser(User newUser) {
-        log.trace("LEVEL: Storage. METHOD: createUser. INPUT: " + newUser);
+        log.debug("LEVEL: Storage. METHOD: createUser. INPUT: " + newUser);
         try {
-            return saveIfVaild(newUser);
+            return repository.save(newUser);
         } catch (DataAccessException ex) {
             log.info("SQL exception!");
             if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("constraint")) {
@@ -37,34 +36,39 @@ public class UserStorage {
         }
     }
 
+    @Transactional
     public User updateUser(User updUser) {
-        log.trace("LEVEL: Storage. METHOD: createUser. INPUT: " + updUser);
+        log.debug("LEVEL: Storage. METHOD: updateUser. INPUT: " + updUser);
         try {
-            User oldUser = readUserById(updUser.getId());
-            if (!oldUser.getEmail().equals(updUser.getEmail())
-                    && !repository.findByEmail(updUser.getEmail()).isEmpty()) { // Не на всех БД constraint работает при update
+            return repository.save(updUser);
+        } catch (DataAccessException ex) {
+            log.info("SQL exception!");
+            if (ex.getMessage() != null && ex.getMessage().toLowerCase().contains("constraint")) {
+                log.warn("Email collision during creation. Email - " + updUser.getEmail());
                 throw new ShareItUniqueValueCollision("This email is already taken");
             }
-            return saveIfVaild(updUser);
-        } catch (DataAccessException ex) {
-            throw new ShareItSQLExecutionFailed("Failed to update user due to: " + ex.getMessage());
+            throw new ShareItSQLExecutionFailed("Failed to save new user due to: " + ex.getMessage());
         }
     }
 
-    public User readUserById(Long userId) {
+    @Transactional
+    public User getUser(Long userId) {
+        log.debug("LEVEL: Storage. METHOD: updateUser. INPUT: " + userId);
         return repository.findById(userId)
-                .orElseThrow(() -> new ShareItEntityNotFound("User with id = " + userId + " not found"));
+                .orElseThrow(
+                        () -> new ShareItEntityNotFound("User with id = " + userId + " not found"));
     }
 
-    public List<User> readManyUsers(int from, int size) {
-        return repository.findAllFromSize(from, size);
+    @Transactional
+    public List<User> getUsersPage(int from, int size) {
+        log.debug("LEVEL: Storage. METHOD: getUsersPage. INPUT: " + from + " " + size);
+        return repository.getUsersPage(from, size);
     }
 
+    @Transactional
     public void deleteUser(Long userId) {
-        repository.delete(readUserById(userId));
+        log.debug("LEVEL: Storage. METHOD: deleteUser. INPUT: " + userId);
+        repository.delete(getUser(userId));
     }
 
-    private User saveIfVaild(User savedUser) {
-        return repository.save(savedUser);
-    }
 }

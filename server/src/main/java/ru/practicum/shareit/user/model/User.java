@@ -1,9 +1,9 @@
 package ru.practicum.shareit.user.model;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.user.dto.RequestUserDTO;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -18,15 +18,20 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @NotBlank
     @Column(name = "user_name", nullable = false)
-    String name;
+    private String name;
 
     @Email
     @NotBlank
     @Column(name = "email", nullable = false, unique = true)
-    String email;
+    private String email;
 
+    public User updateFromDto(RequestUserDTO dto) {
+        this.name = dto.getName() == null || dto.getName().isBlank() ? this.name : dto.getName();
+        this.email = dto.getEmail() == null || dto.getEmail().isBlank() ? this.email : dto.getEmail();
+        return this;
+    }
 }

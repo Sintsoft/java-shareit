@@ -2,18 +2,18 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 public class RequestItemDTO {
 
     private String name;
 
     private String description;
 
-    private Boolean available = true;
+    private Boolean available;
 
     private Long requestId;
 }

@@ -23,31 +23,26 @@ public class ItemRequestController {
     @PostMapping
     public ResponseItemRequestDTO postRequest(@Validated @RequestBody RequestItemRequestDTO dto,
                                               @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-        return service.createRequest(userId, dto);
+        return service.createRequest(dto, userId);
     }
 
     @GetMapping
-    public List<ResponseItemRequestDTO> getUserRequests(@RequestParam(defaultValue = "0") int from,
-                                                        @RequestParam(defaultValue = "10") int size,
-                                                        @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-        log.info("LEVEL: Controller. METHOD: getUserRequests. " +
-                "userid: " + userId + " from: " + from + " size: " + size);
+    public List<ResponseItemRequestDTO> getUserRequests(@RequestHeader(value = "X-Sharer-User-Id") Long userId,
+                                                        @RequestParam(defaultValue = "0") int from,
+                                                        @RequestParam(defaultValue = "10") int size) {
         return service.getUserRequests(userId, from, size);
     }
 
     @GetMapping("/all")
-    public List<ResponseItemRequestDTO> getAllRequests(@RequestParam(defaultValue = "0") int from,
-                                                       @RequestParam(defaultValue = "10") int size,
-                                                       @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
-        log.info("LEVEL: Controller. METHOD: getAllRequests. " +
-                "userid: " + userId + " from: " + from + " size: " + size);
+    public List<ResponseItemRequestDTO> getAllRequests(@RequestHeader(value = "X-Sharer-User-Id") Long userId,
+                                                        @RequestParam(defaultValue = "0") int from,
+                                                        @RequestParam(defaultValue = "10") int size) {
         return service.getRequests(userId, from, size);
     }
 
     @GetMapping("/{requestId}")
-    public ResponseItemRequestDTO getRequest(@PathVariable Long requestId,
-                                             @RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+    public ResponseItemRequestDTO getAllRequests(@RequestHeader(value = "X-Sharer-User-Id") Long userId,
+                                                       @PathVariable Long requestId) {
         return service.getRequest(requestId, userId);
     }
-
 }
