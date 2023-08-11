@@ -26,9 +26,10 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getUsers() {
+    public ResponseEntity<Object> getUsers(@RequestParam(defaultValue = "0") int from,
+                                           @RequestParam(defaultValue = "10") int size) {
         log.info("Get users.");
-        return userClient.getUsers();
+        return userClient.getUsers(from, size);
     }
 
     @DeleteMapping("/{userId}")

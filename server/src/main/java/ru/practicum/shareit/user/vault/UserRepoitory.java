@@ -14,6 +14,6 @@ public interface UserRepoitory extends JpaRepository<User, Long> {
     List<User> findByEmail(String email);
 
     @Query(nativeQuery = true,
-           value = "select u.* from users order by u.id limit :size offset :from")
+           value = "select u.* from users u order by u.id limit :size offset :from")
     public List<User> getUsersPage(@Param("from") int from, @Param("size") int size);
 }
