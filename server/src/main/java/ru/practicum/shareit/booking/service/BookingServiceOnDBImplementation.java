@@ -101,11 +101,6 @@ public class BookingServiceOnDBImplementation implements BookingService {
                     BookingRequestStatus.valueOf(status),
                     from, size)
                 .stream()
-                .map(booking -> {
-                    booking.setStart(null);
-                    booking.setEnd(null);
-                    return booking;
-                })
                 .map(BookingMapper::toDTO)
                 .collect(Collectors.toList());
     }

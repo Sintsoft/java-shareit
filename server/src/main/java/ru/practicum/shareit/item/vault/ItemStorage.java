@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.vault;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import ru.practicum.shareit.item.model.Item;
@@ -11,7 +10,6 @@ import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.utility.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.exceptions.ShareItInvalidEntity;
-import ru.practicum.shareit.utility.exceptions.ShareItSQLExecutionFailed;
 
 import javax.transaction.Transactional;
 import javax.validation.constraints.Positive;

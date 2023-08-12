@@ -14,7 +14,6 @@ import ru.practicum.shareit.utility.exceptions.ShareItInvalidEntity;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component

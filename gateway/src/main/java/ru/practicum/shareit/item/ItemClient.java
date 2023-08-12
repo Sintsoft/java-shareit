@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.item.dto.RequestCommentDTO;
@@ -15,7 +14,6 @@ import ru.practicum.shareit.utility.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.exceptions.ShareItIvanlidEntity;
 
 import javax.validation.constraints.Positive;
-import java.util.List;
 import java.util.Map;
 
 @Service
