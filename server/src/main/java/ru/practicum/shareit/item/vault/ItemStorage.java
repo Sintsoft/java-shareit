@@ -30,7 +30,7 @@ public class ItemStorage {
         if (item.getId() != null) {
             throw new ShareItInvalidEntity("Invalid item");
         }
-        return saveToRepo(item);
+        return repository.save(item);
     }
 
     @Transactional
@@ -38,7 +38,7 @@ public class ItemStorage {
         if (item.getId() == null) {
             throw new ShareItInvalidEntity("Item id cannot be null");
         }
-        return saveToRepo(item);
+        return repository.save(item);
     }
 
     @Transactional
@@ -57,7 +57,8 @@ public class ItemStorage {
 
     @Transactional
     public List<Item> searchItemsPage(String searchString, int from, int size) {
-        return repository.searchItemsPage(searchString, from, size);
+        List<Item> items = repository.searchItemsPage(searchString, from, size);
+        return items;
     }
 
     @Transactional
@@ -65,14 +66,5 @@ public class ItemStorage {
         return repository.getRequestItems(request.getId());
     }
 
-    @Transactional
-    private Item saveToRepo(Item item) {
-        try {
-            return repository.save(item);
-        } catch (DataIntegrityViolationException ex) {
-            log.debug("We got SQL error");
-            throw new ShareItSQLExecutionFailed("Something bad happened, We are working to fix it.");
-        }
-    }
 }
 

@@ -21,7 +21,8 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByNameOrDescriptionContainingIgnoreCase(String nameSearchString, String descriptionSearchString);
 
     @Query(nativeQuery = true,
-           value = "select i.* from items i where i.item_name like concat('%', :searchString ,'%') " +
+           value = "select i.* from items i where (i.item_name ilike concat('%', :searchString ,'%') " +
+                   "or i.description ilike concat('%', :searchString ,'%')) and i.available = true " +
                    "order by i.id asc limit :size offset :from")
     List<Item> searchItemsPage(@Param("searchString") String searchString,
                                @Param("from") int from,

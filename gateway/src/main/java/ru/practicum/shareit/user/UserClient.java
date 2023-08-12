@@ -12,7 +12,6 @@ import ru.practicum.shareit.utility.exceptions.ShareItIvanlidEntity;
 
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static javax.validation.Validation.buildDefaultValidatorFactory;

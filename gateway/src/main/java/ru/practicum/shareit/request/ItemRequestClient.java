@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
+import ru.practicum.shareit.utility.exceptions.ShareItEntityNotFound;
 import ru.practicum.shareit.utility.exceptions.ShareItIvanlidEntity;
 
+import javax.validation.constraints.Positive;
 import java.util.Map;
 
 @Service
@@ -26,18 +28,33 @@ public class ItemRequestClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> createRequest(Long userId, ItemRequestDto dto) {
-        if (dto.getDescription().isBlank()) {
+    public ResponseEntity<Object> createRequest(@Positive Long userId, ItemRequestDto dto) {
+        if (userId < 1) {
+            throw new ShareItEntityNotFound("User id must be positive");
+        }
+        if (dto.getDescription().isBlank() || dto.getDescription() == null) {
             throw new ShareItIvanlidEntity("Null fields not allowed");
         }
         return post("", userId, dto);
     }
 
-    public ResponseEntity<Object> getRequest(Long userId, Long requestId) {
+    public ResponseEntity<Object> getRequest(@Positive Long userId, @Positive Long requestId) {
+        if (userId < 1) {
+            throw new ShareItEntityNotFound("User id must be positive");
+        }
+        if (requestId < 1) {
+            throw new ShareItEntityNotFound("Item request id must be positive");
+        }
         return get("/" + requestId, userId);
     }
 
-    public ResponseEntity<Object> getAllRequests(Long userId, int from, int size) {
+    public ResponseEntity<Object> getAllRequests(@Positive Long userId, @Positive int from, @Positive int size) {
+        if (userId < 1) {
+            throw new ShareItEntityNotFound("User id must be positive");
+        }
+        if (from < 0 || size < 1) {
+            throw new ShareItEntityNotFound("Set correct pagination parameters");
+        }
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size
@@ -45,7 +62,13 @@ public class ItemRequestClient extends BaseClient {
         return get("/all?from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> getUserRequests(Long userId, int from, int size) {
+    public ResponseEntity<Object> getUserRequests(@Positive Long userId, @Positive int from, @Positive int size) {
+        if (userId < 1) {
+            throw new ShareItEntityNotFound("User id must be positive");
+        }
+        if (from < 0 || size < 1) {
+            throw new ShareItEntityNotFound("Set correct pagination parameters");
+        }
         Map<String, Object> parameters = Map.of(
                 "from", from,
                 "size", size

@@ -19,6 +19,7 @@ import ru.practicum.shareit.request.vault.ItemRequestStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.vault.UserStorage;
 import ru.practicum.shareit.utility.exceptions.ShareItInvalidEntity;
+import ru.practicum.shareit.utility.exceptions.ShareItUnalllowedAction;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,6 +60,9 @@ public class ItemServiceOnDBImplementation implements ItemService {
     @Override
     public ResponseItemDTO updateItem(RequestItemDTO dto, Long itemId, Long userId) {
         Item item = itemStorage.getItem(itemId);
+        if (!item.getUser().getId().equals(userId)) {
+            throw new ShareItUnalllowedAction("User " + userId + " can't update item " + itemId);
+        }
         return ItemMapper.toDTO(
                 itemStorage.updateItem(
                         item.updateFromDto(dto)
@@ -73,8 +77,8 @@ public class ItemServiceOnDBImplementation implements ItemService {
         Item item = itemStorage.getItem(itemId);
         return ItemMapper.toDTO(
                 item,
-                bookingStorage.getItemLastBooking(item),
-                bookingStorage.getItemNextBooking(item),
+                userId.equals(item.getUser().getId()) ? bookingStorage.getItemLastBooking(item) : null,
+                userId.equals(item.getUser().getId()) ? bookingStorage.getItemNextBooking(item) : null,
                 commentStorage.getItemComments(item));
     }
 
@@ -85,20 +89,23 @@ public class ItemServiceOnDBImplementation implements ItemService {
                 .stream()
                 .map(item -> ItemMapper.toDTO(
                         item,
-                        bookingStorage.getItemLastBooking(item),
-                        bookingStorage.getItemNextBooking(item),
+                        userId.equals(item.getUser().getId()) ? bookingStorage.getItemLastBooking(item) : null,
+                        userId.equals(item.getUser().getId()) ? bookingStorage.getItemNextBooking(item) : null,
                         commentStorage.getItemComments(item)))
                 .collect(Collectors.toList());
     }
 
     @Override
-    public List<ResponseItemDTO> serarchItems(String searchString, int from, int size) {
+    public List<ResponseItemDTO> serarchItems(String searchString, Long userId, int from, int size) {
+        if (searchString.isBlank()) {
+            return List.of();
+        }
         return itemStorage.searchItemsPage(searchString, from, size)
                 .stream()
                 .map(item -> ItemMapper.toDTO(
                         item,
-                        bookingStorage.getItemLastBooking(item),
-                        bookingStorage.getItemNextBooking(item),
+                        userId.equals(item.getUser().getId()) ? bookingStorage.getItemLastBooking(item) : null,
+                        userId.equals(item.getUser().getId()) ? bookingStorage.getItemNextBooking(item) : null,
                         commentStorage.getItemComments(item)))
                 .collect(Collectors.toList());
     }

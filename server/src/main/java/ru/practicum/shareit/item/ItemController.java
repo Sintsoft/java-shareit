@@ -54,9 +54,10 @@ public class ItemController {
 
     @GetMapping("/search")
     List<ResponseItemDTO> searchItems(@RequestParam(required = true, name = "text") String searchStr,
+                                      @RequestHeader(value = "X-Sharer-User-Id") Long userId,
                                       @RequestParam(defaultValue = "0") int from,
                                       @RequestParam(defaultValue = "10") int size) {
-        return service.serarchItems(searchStr, from, size);
+        return service.serarchItems(searchStr, userId, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

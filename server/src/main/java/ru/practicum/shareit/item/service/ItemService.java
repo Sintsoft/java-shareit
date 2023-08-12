@@ -19,7 +19,7 @@ public interface ItemService {
 
     List<ResponseItemDTO> getUserItems(Long userId, int from, int size);
 
-    List<ResponseItemDTO> serarchItems(String searchString, int from, int size);
+    List<ResponseItemDTO> serarchItems(String searchString, Long userId, int from, int size);
 
     NestedCommentDTO commentItem(RequestCommentDTO dto, Long itemId, Long userId);
 }

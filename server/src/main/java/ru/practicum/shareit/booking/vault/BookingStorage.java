@@ -37,16 +37,39 @@ public class BookingStorage {
 
     @Transactional
     public Booking getItemLastBooking(Item item) {
-        return repository.getItemLastBooking(item.getId()).get(0);
+        List<Booking> bookings = repository.getItemLastBooking(item.getId());
+        return bookings.isEmpty() ? null : bookings.get(0);
     }
 
     @Transactional
     public Booking getItemNextBooking(Item item) {
-        return repository.getItemNextBooking(item.getId()).get(0);
+        List<Booking> bookings = repository.getItemNextBooking(item.getId());
+        return bookings.isEmpty() ? null : bookings.get(0);
     }
 
     @Transactional
     public List<Booking> getUserBookings(User user, BookingRequestStatus status, int from, int size) {
+        switch (status) {
+            case ALL:
+                return repository.getAllUserBookings(user.getId(), from, size);
+            case PAST:
+                return repository.getPastUserBookings(user.getId(), from, size);
+            case FUTURE:
+                return repository.getFutureUserBookings(user.getId(), from, size);
+            case CURRENT:
+                return repository.getCurrentUserBookings(user.getId(), from, size);
+            case WAITING:
+                return repository.getStatusUserBookings(user.getId(), BookingStatus.WAITING.toString(), from, size);
+            case REJECTED:
+                return repository.getStatusUserBookings(user.getId(), BookingStatus.REJECTED.toString(), from, size);
+            default:
+                throw new ShareItInvalidEntity("Unknown status");
+        }
+
+    }
+
+    @Transactional
+    public List<Booking> getUserItemsBookings(User user, BookingRequestStatus status, int from, int size) {
         switch (status) {
             case ALL:
                 return repository.getAllUserItemsBookings(user.getId(), from, size);// repository.getAllUserBookings(user.getId(), from, size);
@@ -60,26 +83,6 @@ public class BookingStorage {
                 return repository.getStatusUserItemsBookings(user.getId(), BookingStatus.WAITING.toString(),  from, size);
             case REJECTED:
                 return repository.getStatusUserItemsBookings(user.getId(), BookingStatus.REJECTED.toString(),  from, size);
-            default:
-                throw new ShareItInvalidEntity("Unknown status");
-        }
-    }
-
-    @Transactional
-    public List<Booking> getUserItemsBookings(User user, BookingRequestStatus status, int from, int size) {
-        switch (status) {
-            case ALL:
-                return repository.getAllUserBookings(user.getId(), from, size);
-            case PAST:
-                return repository.getPastUserBookings(user.getId(), from, size);
-            case FUTURE:
-                return repository.getFutureUserBookings(user.getId(), from, size);
-            case CURRENT:
-                return repository.getCurrentUserBookings(user.getId(), from, size);
-            case WAITING:
-                return repository.getStatusUserBookings(user.getId(), BookingStatus.WAITING.toString(), from, size);
-            case REJECTED:
-                return repository.getStatusUserBookings(user.getId(), BookingStatus.WAITING.toString(), from, size);
             default:
                 throw new ShareItInvalidEntity("Unknown status");
         }

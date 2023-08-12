@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Table(name = "items")
-public class Item {
+public class    Item {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
