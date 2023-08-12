@@ -31,6 +31,12 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getBookings(long userId, BookingState state, Integer from, Integer size) {
+        if (from < 0 || size < 1) {
+            throw new ShareItIvanlidEntity("Set correct pagination parameters");
+        }
+        if (userId < 1) {
+            throw new ShareItEntityNotFound("User id must be positive");
+        }
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,
@@ -70,6 +76,12 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getUserItemsBookings(long userId, BookingState state, Integer from, Integer size) {
+        if (from < 0 || size < 1) {
+            throw new ShareItIvanlidEntity("Set correct pagination parameters");
+        }
+        if (userId < 1) {
+            throw new ShareItEntityNotFound("User id must be positive");
+        }
         Map<String, Object> parameters = Map.of(
                 "state", state.name(),
                 "from", from,

@@ -14,6 +14,7 @@ import ru.practicum.shareit.utility.exceptions.ShareItInvalidEntity;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -57,7 +58,8 @@ public class BookingStorage {
             case FUTURE:
                 return repository.getFutureUserBookings(user.getId(), from, size);
             case CURRENT:
-                return repository.getCurrentUserBookings(user.getId(), from, size);
+                List<Booking> tmp = repository.getCurrentUserBookings(user.getId(), from, size);
+                return tmp;
             case WAITING:
                 return repository.getStatusUserBookings(user.getId(), BookingStatus.WAITING.toString(), from, size);
             case REJECTED:
@@ -74,7 +76,7 @@ public class BookingStorage {
             case ALL:
                 return repository.getAllUserItemsBookings(user.getId(), from, size);// repository.getAllUserBookings(user.getId(), from, size);
             case PAST:
-                return repository.getPastUseItemsrBookings(user.getId(), from, size);
+                return repository.getPastUserItemsBookings(user.getId(), from, size);
             case FUTURE:
                 return repository.getFutureUserItemsBookings(user.getId(), from, size);
             case CURRENT:
@@ -90,7 +92,7 @@ public class BookingStorage {
 
     @Transactional
     public boolean userNotBookedItem(User user, Item item) {
-        return repository.getUseкPastBookingsOfItem(
-                user.getId(), item.getId()).isEmpty();
+        return repository.getUserPastBookingsOfItem(
+                item.getId(), user.getId()).isEmpty();
     }
 }

@@ -41,4 +41,10 @@ public class ErrorHandler {
         return new ErrorResponse(ex.getMessage(), Arrays.toString(ex.getStackTrace()));
     }
 
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleOtherError(Throwable ex) {
+        return new ErrorResponse(ex.getMessage(), Arrays.toString(ex.getStackTrace()));
+    }
+
 }

@@ -116,7 +116,7 @@ public class ItemClient extends BaseClient {
         if (dto.getText() == null || dto.getText().isBlank()) {
             throw new ShareItIvanlidEntity("Set item description");
         }
-        return post("/" + itemId + "/comment", userId);
+        return post("/" + itemId + "/comment", userId, dto);
     }
 
 }

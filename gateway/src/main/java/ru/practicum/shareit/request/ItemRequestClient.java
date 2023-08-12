@@ -32,7 +32,7 @@ public class ItemRequestClient extends BaseClient {
         if (userId < 1) {
             throw new ShareItEntityNotFound("User id must be positive");
         }
-        if (dto.getDescription().isBlank() || dto.getDescription() == null) {
+        if (dto.getDescription() == null || dto.getDescription().isBlank()) {
             throw new ShareItIvanlidEntity("Null fields not allowed");
         }
         return post("", userId, dto);
@@ -49,11 +49,11 @@ public class ItemRequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getAllRequests(@Positive Long userId, @Positive int from, @Positive int size) {
+        if (from < 0 || size < 1) {
+            throw new ShareItIvanlidEntity("Set correct pagination parameters");
+        }
         if (userId < 1) {
             throw new ShareItEntityNotFound("User id must be positive");
-        }
-        if (from < 0 || size < 1) {
-            throw new ShareItEntityNotFound("Set correct pagination parameters");
         }
         Map<String, Object> parameters = Map.of(
                 "from", from,
@@ -63,11 +63,11 @@ public class ItemRequestClient extends BaseClient {
     }
 
     public ResponseEntity<Object> getUserRequests(@Positive Long userId, @Positive int from, @Positive int size) {
+        if (from < 0 || size < 1) {
+            throw new ShareItIvanlidEntity("Set correct pagination parameters");
+        }
         if (userId < 1) {
             throw new ShareItEntityNotFound("User id must be positive");
-        }
-        if (from < 0 || size < 1) {
-            throw new ShareItEntityNotFound("Set correct pagination parameters");
         }
         Map<String, Object> parameters = Map.of(
                 "from", from,

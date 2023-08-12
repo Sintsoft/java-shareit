@@ -57,8 +57,7 @@ public class ItemRequestServicOnDBImplementation implements ItemRequestService {
 
     @Override
     public List<ResponseItemRequestDTO> getRequests(Long userId, int from, int size) {
-        userStorage.getUser(userId);
-        return requestStorage.getAllRequestsPage(from, size)
+        return requestStorage.getAllRequestsPage(userStorage.getUser(userId), from, size)
                 .stream()
                 .map(request -> ItemRequestMapper.toDTO(
                         request,

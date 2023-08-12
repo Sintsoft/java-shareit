@@ -19,8 +19,9 @@ public interface ItemRequestRepository extends JpaRepository<ItemRequest, Long> 
                                           @Param("size") int size);
 
     @Query(nativeQuery = true,
-           value = "select r.* from requests r " +
+           value = "select r.* from requests r where r.requestor_id != :userId " +
                     "order by r.id limit :size offset :from")
-    List<ItemRequest> getAllRequestsPage(@Param("from") int from,
+    List<ItemRequest> getAllRequestsPage(@Param("userId") Long userId,
+                                         @Param("from") int from,
                                          @Param("size") int size);
 }

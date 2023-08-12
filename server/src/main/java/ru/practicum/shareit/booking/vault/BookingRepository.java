@@ -40,8 +40,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     // По наличию элементов в этом списке проверим брал ли пользователь вещь (для коммента)
     @Query(nativeQuery = true,
            value = "select b.* from bookings b where b.item_id = :itemId " +
-                    "and b.booker_id = :userId and b.end_date < now()")
-    List<Booking> getUseкPastBookingsOfItem(@Param("itemId") Long itemId, @Param("userId") Long userId);
+                    "and b.booker_id = :userId and status = 'APPROVED' and b.end_date < now()")
+    List<Booking> getUserPastBookingsOfItem(@Param("itemId") Long itemId, @Param("userId") Long userId);
 
     /*
      * User items bookings
@@ -60,9 +60,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             value = "select b.* from bookings b left join items i on b.item_id = i.id where i.user_id = :userId " +
                     "and b.end_date < now() and b.status = 'APPROVED' " +
                     "order by b.start_date  desc offset :from rows fetch first :size rows only")
-    List<Booking> getPastUseItemsrBookings(@Param("userId") Long userId,
-                                     @Param("from") int from,
-                                     @Param("size") int size);
+    List<Booking> getPastUserItemsBookings(@Param("userId") Long userId,
+                                           @Param("from") int from,
+                                           @Param("size") int size);
 
     // Status = FUTURE
     @Query(nativeQuery = true,
@@ -73,10 +73,10 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
                                       @Param("from") int from,
                                       @Param("size") int size);
 
-    // Status = CURRENTs
+    // Status = CURRENT
     @Query(nativeQuery = true,
             value = "select b.* from bookings b left join items i on b.item_id = i.id where i.user_id = :userId " +
-                    "and (b.end_date > now() and b.start_date < now()) and b.status not in ('CANCELED', 'REJECTED') " +
+                    "and (b.end_date > now() and b.start_date < now()) and b.status not in ('CANCELED') " +
                     "order by b.start_date  desc offset :from rows fetch first :size rows only")
     List<Booking> getCurrentUserItemsBookings(@Param("userId") Long userId,
                                         @Param("from") int from,
@@ -125,7 +125,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     // Status = CURRENTs
     @Query(nativeQuery = true,
             value = "select b.* from bookings b where b.booker_id = :userId " +
-                    "and (b.end_date > now() and b.start_date < now()) and b.status not in ('CANCELED', 'REJECTED') " +
+                    "and (b.end_date > now() and b.start_date < now()) and b.status not in ('CANCELED') " +
                     "order by b.start_date  desc offset :from rows fetch first :size rows only")
     List<Booking> getCurrentUserBookings(@Param("userId") Long userId,
                                               @Param("from") int from,

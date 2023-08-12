@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,10 +19,10 @@ public class ResponseBookingDTO {
 
     private NestedItemDTO item;
 
-    @NotNull
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime start;
 
-    @NotNull
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime end;
 
     private NestedUserDTO booker;

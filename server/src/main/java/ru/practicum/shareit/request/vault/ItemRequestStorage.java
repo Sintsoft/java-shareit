@@ -49,9 +49,9 @@ public class ItemRequestStorage {
     }
 
     @Transactional
-    public List<ItemRequest> getAllRequestsPage(int from, int size) {
+    public List<ItemRequest> getAllRequestsPage(@NonNull User user, int from, int size) {
         log.debug("LEVEL: Storage. METHOD: createItemRequest. INPUT: "
                 + " " + from + " " + size);
-        return repository.getAllRequestsPage(from, size);
+        return repository.getAllRequestsPage(user.getId(),  from, size);
     }
 }

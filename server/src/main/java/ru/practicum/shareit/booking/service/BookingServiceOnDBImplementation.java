@@ -96,15 +96,16 @@ public class BookingServiceOnDBImplementation implements BookingService {
 
     @Override
     public List<ResponseBookingDTO> getUserBookings(Long userId, String status, int from, int size) {
-        List<Booking> bookings = bookingStorage.getUserBookings(
-                userStorage.getUser(userId),
-                BookingRequestStatus.valueOf(status),
-                from, size);
         return bookingStorage.getUserBookings(
                     userStorage.getUser(userId),
                     BookingRequestStatus.valueOf(status),
                     from, size)
                 .stream()
+                .map(booking -> {
+                    booking.setStart(null);
+                    booking.setEnd(null);
+                    return booking;
+                })
                 .map(BookingMapper::toDTO)
                 .collect(Collectors.toList());
     }
