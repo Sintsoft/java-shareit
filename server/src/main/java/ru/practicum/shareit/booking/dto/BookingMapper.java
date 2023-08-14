@@ -7,8 +7,10 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
-public abstract class BookingMapper {
+public class BookingMapper {
 
+    private BookingMapper() {
+    }
 
     public static Booking fromDTO(RequestBookingDTO dto, User user, Item item) {
         return new Booking(

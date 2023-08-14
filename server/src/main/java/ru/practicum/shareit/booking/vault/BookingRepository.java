@@ -126,7 +126,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(nativeQuery = true,
             value = "select b.* from bookings b where b.booker_id = :userId " +
                     "and (b.end_date > now() and b.start_date < now()) and b.status not in ('CANCELED') " +
-                    "order by b.start_date  desc offset :from rows fetch first :size rows only")
+                    "order by b.start_date asc offset :from rows fetch first :size rows only")
     List<Booking> getCurrentUserBookings(@Param("userId") Long userId,
                                               @Param("from") int from,
                                               @Param("size") int size);

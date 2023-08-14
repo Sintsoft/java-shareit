@@ -1,15 +1,19 @@
 package ru.practicum.shareit.utility.errorHandling;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 
 @Data
-@RequiredArgsConstructor
 @AllArgsConstructor
 public class ErrorResponse {
 
-    private final String error;
+    public ErrorResponse(String error) {
+        this.error = error;
+    }
 
+    private String error;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String exception;
 }

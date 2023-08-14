@@ -9,7 +9,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class ItemRequestMapper {
+public class ItemRequestMapper {
+
+    public ItemRequestMapper() {
+    }
 
     public static ItemRequest fromDTO(RequestItemRequestDTO dto, User user) {
         return new ItemRequest(

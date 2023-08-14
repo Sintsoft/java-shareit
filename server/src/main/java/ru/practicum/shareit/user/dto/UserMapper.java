@@ -2,7 +2,10 @@ package ru.practicum.shareit.user.dto;
 
 import ru.practicum.shareit.user.model.User;
 
-public abstract class UserMapper {
+public class UserMapper {
+
+    private UserMapper() {
+    }
 
     public static User fromDto(RequestUserDTO dto) {
         return new User(

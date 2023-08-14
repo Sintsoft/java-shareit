@@ -11,7 +11,10 @@ import ru.practicum.shareit.user.model.User;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public abstract class ItemMapper {
+public class ItemMapper {
+
+    private ItemMapper() {
+    }
 
     public static Item fromDTO(RequestItemDTO dto, User user, ItemRequest request) {
         return new Item(

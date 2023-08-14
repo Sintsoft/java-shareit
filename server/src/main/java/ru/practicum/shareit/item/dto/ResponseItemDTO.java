@@ -3,7 +3,6 @@ package ru.practicum.shareit.item.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.booking.dto.NestedBookingDTO;
 import ru.practicum.shareit.comment.dto.NestedCommentDTO;
 
@@ -11,7 +10,6 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
 public class ResponseItemDTO {
 
     @NonNull
